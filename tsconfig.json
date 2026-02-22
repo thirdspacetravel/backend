@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    /* Output Structure */
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    /* Node ESM Behavior */
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+
+    /* Latest JS features for Node 24 */
+    "target": "esnext",
+    "lib": ["esnext"],
+
+    /* Required for Node globals (process, Buffer, etc.) */
+    "types": ["node"],
+
+    /* Strong Type Safety */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "noUncheckedSideEffectImports": true,
+
+    /* Build Output */
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* Performance + compatibility */
+    "skipLibCheck": true,
+
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

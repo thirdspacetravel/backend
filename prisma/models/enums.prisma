@@ -1,0 +1,21 @@
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+}
+
+enum ContactMethod {
+  WHATSAPP
+  EMAIL
+  PHONE
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  TRIP_MANAGER
+}

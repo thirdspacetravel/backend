@@ -1,0 +1,37 @@
+model Customer {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Personal Information
+  fullName        String
+  avatarUrl       String? // For the profile preview image
+  dob             DateTime? // Date of Birth
+  gender          Gender?
+  nationality     String? // e.g., "Indian", "American"
+  maritalStatus   MaritalStatus?
+  anniversaryDate DateTime?
+
+  // Contact Information
+  email            String        @unique
+  altEmail         String?
+  primaryPhone     String        @unique
+  secondaryPhone   String?
+  preferredContact ContactMethod @default(EMAIL)
+
+  // Address Information
+  streetAddress String?
+  city          String?
+  state         String?
+  zipCode       String?
+  country       String?
+
+  // Account Settings & Security
+  passwordHash String // For Security & Login
+
+  // Notification Preferences (Toggles)
+  tripUpdates       Boolean @default(true) // "Trip Updates" via WhatsApp
+  promotionalEmails Boolean @default(false) // "Promotional Emails" toggle
+
+  @@map("customers")
+}

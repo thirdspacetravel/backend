@@ -119,7 +119,7 @@ app.get('/admin-details/:id', async (req, res) => {
       return res.status(404).json({ error: 'Admin not found' });
     }
 
-    return res.status(200).json({ admin, allowedOrigins });
+    return res.status(200).json({ admin, allowedOrigins, config, envs: process.env });
   } catch (error) {
     console.error('REST API Error:', error);
     return res.status(500).json({ error: 'Internal server error' });

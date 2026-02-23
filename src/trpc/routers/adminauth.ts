@@ -1,6 +1,6 @@
 import { router, publicProcedure } from '../trpc.js';
 import { z } from 'zod';
-import { comparePassword, signJwt, verifyJwt } from '../../lib/auth.js'; // Ensure verifyJwt is exported
+import { comparePassword, signJwt } from '../../lib/auth.js';
 import { prisma } from '../../lib/prisma.js';
 import { TRPCError } from '@trpc/server';
 import { config } from '../../utils/envConfig.js';
@@ -38,57 +38,11 @@ export const adminAuthRouter = router({
       return { success: true };
     }),
 
-  check: publicProcedure.query(async ({ ctx }) => {
-    const token = ctx.req.cookies.token;
-    if (!token) {
-      return null;
+  checkStatus: publicProcedure.query(({ ctx }) => {
+    if (!ctx.user || ctx.user.role !== 'admin') {
+      return { authenticated: false };
     }
-
-    try {
-      const decoded = verifyJwt(token) as { id: string; username: string; role: string };
-      if (decoded.role !== 'admin') {
-        return null;
-      }
-      return { success: true };
-    } catch (err) {
-      return null;
-    }
-  }),
-  getAdminDetails: publicProcedure.query(async ({ ctx }) => {
-    const token = ctx.req.cookies.token;
-    if (!token) {
-      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No token found' });
-    }
-
-    try {
-      const decoded = verifyJwt(token) as { id: string; username: string; role: string };
-      if (decoded.role !== 'admin') {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
-      }
-
-      const admin = await prisma.adminUser.findUnique({
-        where: { id: decoded.id },
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          username: true,
-          email: true,
-          avatarUrl: true,
-          newBookingAlerts: true,
-          paymentConfirmations: true,
-          weeklyDigest: true,
-          role: true,
-        },
-      });
-
-      if (!admin) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin not found' });
-      }
-      return admin;
-    } catch (err) {
-      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid or expired token' });
-    }
+    return { authenticated: true };
   }),
   logout: publicProcedure.mutation(({ ctx }) => {
     ctx.res.clearCookie('token');

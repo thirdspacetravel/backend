@@ -1,5 +1,5 @@
 import express from 'express';
-import type { Application } from 'express';
+import type { Application, Request, Response } from 'express';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { config } from './utils/envConfig.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -12,6 +12,12 @@ import cookieParser from 'cookie-parser';
 import * as pino from 'pino-http';
 import { logger } from './utils/logger.js';
 import { prisma } from './lib/prisma.js';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import fs from 'fs';
+import { authenticate } from './lib/auth.js';
+import { sleep } from './lib/sleep.js';
 
 const app: Application = express();
 app.use(cookieParser());
@@ -20,6 +26,7 @@ app.use(
   helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
 );
 
@@ -30,25 +37,13 @@ const allowedOrigins: string[] = [
 ];
 
 const corsOptions: CorsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: allowedOrigins, // Express-cors handles the logic for you if you pass an array
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'trpc-batch-mode'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'trpc-batch-mode'],
   optionsSuccessStatus: 200,
 };
-
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -126,6 +121,60 @@ app.get('/admin-details/:id', async (req, res) => {
   }
 });
 
+const UPLOAD_DIR = 'uploads';
+
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR);
+}
+
+const storage = multer.diskStorage({
+  destination: (req: Request, file: Express.Multer.File, cb) => {
+    cb(null, UPLOAD_DIR);
+  },
+  filename: (req: Request, file: Express.Multer.File, cb) => {
+    const fileExt = path.extname(file.originalname);
+    const newFileName = `${uuidv4()}${fileExt}`;
+    cb(null, newFileName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only images are allowed!') as any, false);
+    }
+  },
+});
+app.post(
+  '/upload',
+  authenticate,
+  upload.single('image'),
+  async (req: Request, res: Response): Promise<any> => {
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded',
+      });
+    }
+    // await sleep(40000);
+    return res.json({
+      success: true,
+      message: 'File uploaded successfully',
+      filename: file.filename,
+    });
+  },
+);
+
+const uploadPath = path.join(process.cwd(), 'uploads');
+app.use('/images', express.static(uploadPath));
 app.use(notFoundHandler);
 app.use(errorHandler);
 

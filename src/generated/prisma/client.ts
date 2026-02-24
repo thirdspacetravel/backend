@@ -49,3 +49,8 @@ export type AdminUser = Prisma.AdminUserModel
  * 
  */
 export type Customer = Prisma.CustomerModel
+/**
+ * Model Trip
+ * 
+ */
+export type Trip = Prisma.TripModel

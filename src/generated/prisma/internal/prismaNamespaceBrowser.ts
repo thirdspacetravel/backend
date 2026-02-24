@@ -52,7 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   AdminUser: 'AdminUser',
-  Customer: 'Customer'
+  Customer: 'Customer',
+  Trip: 'Trip'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -119,12 +120,50 @@ export const CustomerScalarFieldEnum = {
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
+export const TripScalarFieldEnum = {
+  id: 'id',
+  tripName: 'tripName',
+  destination: 'destination',
+  tripType: 'tripType',
+  fullOverview: 'fullOverview',
+  days: 'days',
+  nights: 'nights',
+  totalSeats: 'totalSeats',
+  pickupLocation: 'pickupLocation',
+  dropOffLocation: 'dropOffLocation',
+  inclusions: 'inclusions',
+  exclusions: 'exclusions',
+  itinerary: 'itinerary',
+  status: 'status',
+  isFeatured: 'isFeatured',
+  isAcceptingBookings: 'isAcceptingBookings',
+  categories: 'categories',
+  priceQuad: 'priceQuad',
+  priceTriple: 'priceTriple',
+  priceDouble: 'priceDouble',
+  startDateTime: 'startDateTime',
+  endDateTime: 'endDateTime',
+  images: 'images',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TripScalarFieldEnum = (typeof TripScalarFieldEnum)[keyof typeof TripScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const AdminUserOrderByRelevanceFieldEnum = {
@@ -166,4 +205,35 @@ export const CustomerOrderByRelevanceFieldEnum = {
 } as const
 
 export type CustomerOrderByRelevanceFieldEnum = (typeof CustomerOrderByRelevanceFieldEnum)[keyof typeof CustomerOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const TripOrderByRelevanceFieldEnum = {
+  id: 'id',
+  tripName: 'tripName',
+  destination: 'destination',
+  fullOverview: 'fullOverview',
+  pickupLocation: 'pickupLocation',
+  dropOffLocation: 'dropOffLocation',
+  inclusions: 'inclusions',
+  exclusions: 'exclusions'
+} as const
+
+export type TripOrderByRelevanceFieldEnum = (typeof TripOrderByRelevanceFieldEnum)[keyof typeof TripOrderByRelevanceFieldEnum]
 

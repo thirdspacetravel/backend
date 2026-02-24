@@ -385,7 +385,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   AdminUser: 'AdminUser',
-  Customer: 'Customer'
+  Customer: 'Customer',
+  Trip: 'Trip'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -401,7 +402,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "adminUser" | "customer"
+    modelProps: "adminUser" | "customer" | "trip"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -537,6 +538,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Trip: {
+      payload: Prisma.$TripPayload<ExtArgs>
+      fields: Prisma.TripFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TripFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TripFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload>
+        }
+        findFirst: {
+          args: Prisma.TripFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TripFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload>
+        }
+        findMany: {
+          args: Prisma.TripFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload>[]
+        }
+        create: {
+          args: Prisma.TripCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload>
+        }
+        createMany: {
+          args: Prisma.TripCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.TripDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload>
+        }
+        update: {
+          args: Prisma.TripUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload>
+        }
+        deleteMany: {
+          args: Prisma.TripDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TripUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.TripUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TripPayload>
+        }
+        aggregate: {
+          args: Prisma.TripAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTrip>
+        }
+        groupBy: {
+          args: Prisma.TripGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TripGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TripCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TripCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -624,12 +691,50 @@ export const CustomerScalarFieldEnum = {
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
+export const TripScalarFieldEnum = {
+  id: 'id',
+  tripName: 'tripName',
+  destination: 'destination',
+  tripType: 'tripType',
+  fullOverview: 'fullOverview',
+  days: 'days',
+  nights: 'nights',
+  totalSeats: 'totalSeats',
+  pickupLocation: 'pickupLocation',
+  dropOffLocation: 'dropOffLocation',
+  inclusions: 'inclusions',
+  exclusions: 'exclusions',
+  itinerary: 'itinerary',
+  status: 'status',
+  isFeatured: 'isFeatured',
+  isAcceptingBookings: 'isAcceptingBookings',
+  categories: 'categories',
+  priceQuad: 'priceQuad',
+  priceTriple: 'priceTriple',
+  priceDouble: 'priceDouble',
+  startDateTime: 'startDateTime',
+  endDateTime: 'endDateTime',
+  images: 'images',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TripScalarFieldEnum = (typeof TripScalarFieldEnum)[keyof typeof TripScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const AdminUserOrderByRelevanceFieldEnum = {
@@ -671,6 +776,37 @@ export const CustomerOrderByRelevanceFieldEnum = {
 } as const
 
 export type CustomerOrderByRelevanceFieldEnum = (typeof CustomerOrderByRelevanceFieldEnum)[keyof typeof CustomerOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const TripOrderByRelevanceFieldEnum = {
+  id: 'id',
+  tripName: 'tripName',
+  destination: 'destination',
+  fullOverview: 'fullOverview',
+  pickupLocation: 'pickupLocation',
+  dropOffLocation: 'dropOffLocation',
+  inclusions: 'inclusions',
+  exclusions: 'exclusions'
+} as const
+
+export type TripOrderByRelevanceFieldEnum = (typeof TripOrderByRelevanceFieldEnum)[keyof typeof TripOrderByRelevanceFieldEnum]
 
 
 
@@ -732,6 +868,27 @@ export type EnumContactMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
 
 /**
@@ -831,6 +988,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   adminUser?: Prisma.AdminUserOmit
   customer?: Prisma.CustomerOmit
+  trip?: Prisma.TripOmit
 }
 
 /* Types for Logging */

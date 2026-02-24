@@ -4,7 +4,6 @@ import { comparePassword, signJwt } from '../../lib/auth.js';
 import { prisma } from '../../lib/prisma.js';
 import { TRPCError } from '@trpc/server';
 import { config } from '../../utils/envConfig.js';
-
 export const adminAuthRouter = router({
   login: publicProcedure
     .input(z.object({ username: z.string(), password: z.string() }))
@@ -38,7 +37,7 @@ export const adminAuthRouter = router({
       return { success: true };
     }),
 
-  checkStatus: publicProcedure.query(({ ctx }) => {
+  checkStatus: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.user || ctx.user.role !== 'admin') {
       return { authenticated: false };
     }

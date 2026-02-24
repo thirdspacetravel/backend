@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { config } from '../utils/envConfig.js';
-
+import type { NextFunction, Request, Response } from 'express';
 const JWT_SECRET = config.jwtSecret;
 const EXPIRES_IN = '7d';
 
@@ -21,3 +21,19 @@ export const verifyJwt = (token: string) =>
     username: string;
     role: 'admin' | 'user';
   };
+
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Authentication required' });
+  }
+
+  try {
+    const decoded = verifyJwt(token);
+    (req as any).user = decoded;
+    next();
+  } catch (error) {
+    return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+  }
+};

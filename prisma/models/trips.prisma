@@ -1,0 +1,38 @@
+model Trip {
+    id              String @id @default(cuid())
+    tripName        String @default("Untitled Trip")
+    destination     String @default("Destination Not Set")
+    tripType        Int?
+    fullOverview    String @default("Write a detailed overview of the trip here.") @db.Text
+    days            Int?
+    nights          Int?
+    totalSeats      Int?
+    pickupLocation  String @default("Starting Point Not Set")
+    dropOffLocation String @default("Drop-off Point Not Set")
+    inclusions      String @default("") @db.Text
+    exclusions      String @default("") @db.Text
+
+    itinerary Json
+
+    status              Int     @default(1)
+    isFeatured          Boolean @default(false)
+    isAcceptingBookings Boolean @default(false)
+
+    // Stored as JSON: string[]
+    categories Json @default("[]")
+
+    // Flattened Price structure
+    priceQuad   Int?
+    priceTriple Int?
+    priceDouble Int?
+
+    // Combined Date and Time
+    startDateTime DateTime?
+    endDateTime   DateTime?
+
+    images    Json     @default("[]")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("trips")
+}

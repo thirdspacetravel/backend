@@ -4,7 +4,7 @@ import { router, adminProcedure } from '../trpc.js';
 import z from 'zod';
 import { sleep } from '../../lib/sleep.js';
 import type { Prisma } from '../../generated/prisma/browser.js';
-interface DayData {
+export interface DayData {
   title: string;
   subtitle: string;
 }

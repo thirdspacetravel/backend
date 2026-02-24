@@ -6,7 +6,7 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   logger.error({ err }, 'An error occurred');
   res.status(500).json({
     success: false,
-    error: config.env === 'production' ? 'Internal server error' : err.message,
+    error: err.message,
     timestamp: new Date().toISOString(),
   });
 }

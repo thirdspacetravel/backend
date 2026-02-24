@@ -1,5 +1,5 @@
 import express from 'express';
-import type { Application, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { config } from './utils/envConfig.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -121,17 +121,20 @@ app.get('/admin-details/:id', async (req, res) => {
   }
 });
 
-const UPLOAD_DIR = 'uploads';
+// 1. Use absolute path to ensure Hostinger finds the folder correctly
+const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
+// 2. Ensure directory exists with proper recursive flag
 if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR);
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
 const storage = multer.diskStorage({
-  destination: (req: Request, file: Express.Multer.File, cb) => {
+  destination: (req, file, cb) => {
+    // Always use the absolute path here
     cb(null, UPLOAD_DIR);
   },
-  filename: (req: Request, file: Express.Multer.File, cb) => {
+  filename: (req, file, cb) => {
     const fileExt = path.extname(file.originalname);
     const newFileName = `${uuidv4()}${fileExt}`;
     cb(null, newFileName);
@@ -143,38 +146,37 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB limit
   fileFilter: (req, file, cb) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only images are allowed!') as any, false);
+      // Pass the error to the callback; Express needs an error handler to catch this
+      cb(new Error('Invalid file type. Only images are allowed!') as any);
     }
   },
 });
-app.post(
-  '/upload',
-  authenticate,
-  upload.single('image'),
-  async (req: Request, res: Response): Promise<any> => {
-    const file = req.file;
 
-    if (!file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded',
-      });
+// 3. The Route Handler
+app.post('/upload', authenticate, (req: Request, res: Response, next: NextFunction) => {
+  upload.single('image')(req, res, err => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ success: false, message: `Multer Error: ${err.message}` });
+    } else if (err) {
+      return res.status(400).json({ success: false, message: err.message });
     }
-    // await sleep(40000);
+
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
     return res.json({
       success: true,
       message: 'File uploaded successfully',
       filename: file.filename,
     });
-  },
-);
-
-const uploadPath = path.join(process.cwd(), 'uploads');
-app.use('/images', express.static(uploadPath));
+  });
+});
+app.use('/images', express.static(UPLOAD_DIR));
 app.use(notFoundHandler);
 app.use(errorHandler);
 

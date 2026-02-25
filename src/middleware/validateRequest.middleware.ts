@@ -8,10 +8,8 @@ export function validateRequest(schema: z.ZodSchema) {
       next();
     } catch (error: unknown) {
       if (error instanceof ZodError) {
-        const validationError = new Error(
-          error.issues.map(e => e.message).join(', ')
-        );
-        
+        const validationError = new Error(error.issues.map(e => e.message).join(', '));
+
         (validationError as any).statusCode = 400;
         return next(validationError);
       }

@@ -1,14 +1,55 @@
 import { TRPCError } from '@trpc/server';
-import { prisma } from '../../lib/prisma.js';
-import { router, adminProcedure } from '../trpc.js';
+import { prisma } from '../../config/database.config.js';
+import { router, adminProcedure, publicProcedure } from '../trpc.js';
 import z from 'zod';
-import { sleep } from '../../lib/sleep.js';
 import type { Prisma } from '../../generated/prisma/browser.js';
-export interface DayData {
-  title: string;
-  subtitle: string;
-}
+import { config } from '../../config/env.config.js';
+import { signJwt } from '../../utils/jwt.js';
+import { comparePassword } from '../../utils/password.js';
+import type { DayData } from '../../types/admin.trpc.js';
 export const adminRouter = router({
+  login: publicProcedure
+    .input(z.object({ username: z.string(), password: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const admin = await prisma.adminUser.findUnique({
+        where: { username: input.username },
+      });
+
+      if (!admin) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Admin user not found' });
+      }
+
+      const valid = await comparePassword(input.password, admin.passwordHash);
+      if (!valid) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid credentials' });
+      }
+
+      const token = signJwt({
+        id: admin.id,
+        username: admin.username,
+        role: 'admin',
+      });
+
+      ctx.res.cookie('token', token, {
+        httpOnly: true,
+        secure: config.env === 'production',
+        sameSite: 'strict',
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      });
+
+      return { success: true };
+    }),
+
+  checkStatus: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.user || ctx.user.role !== 'admin') {
+      return { authenticated: false };
+    }
+    return { authenticated: true };
+  }),
+  logout: publicProcedure.mutation(({ ctx }) => {
+    ctx.res.clearCookie('token');
+    return { success: true };
+  }),
   getMe: adminProcedure.query(async ({ ctx }) => {
     const admin = await prisma.adminUser.findUnique({
       where: { id: ctx.user.id },
@@ -40,7 +81,6 @@ export const adminRouter = router({
         categories: [],
       },
     });
-    await sleep(2000);
     return {
       ...trip,
       itinerary: trip.itinerary as unknown as DayData[],

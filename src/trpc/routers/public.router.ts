@@ -1,6 +1,6 @@
-import { prisma } from '../../lib/prisma.js';
+import { prisma } from '../../config/database.config.js';
 import { router, publicProcedure } from '../trpc.js';
-import type { DayData } from './admin.js';
+import type { DayData } from '../../types/admin.trpc.js';
 export const publicRouter = router({
   fetchTrips: publicProcedure.query(async () => {
     const trips = await prisma.trip.findMany();

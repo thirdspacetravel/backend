@@ -1,9 +1,10 @@
-import { router, publicProcedure } from '../trpc.js';
-import { z } from 'zod';
-import { comparePassword, signJwt } from '../../lib/auth.js';
-import { config } from '../../utils/envConfig.js';
+import { config } from '../../config/env.config.js';
+import { router, protectedProcedure, publicProcedure } from '../trpc.js';
+import { signJwt } from '../../utils/jwt.js';
+import { comparePassword } from '../../utils/password.js';
+import z from 'zod';
 
-export const userAuthRouter = router({
+export const userRouter = router({
   login: publicProcedure
     .input(
       z.object({
@@ -53,5 +54,8 @@ export const userAuthRouter = router({
   logout: publicProcedure.mutation(({ ctx }) => {
     ctx.res.clearCookie('token');
     return { success: true };
+  }),
+  profile: protectedProcedure.query(({ ctx }) => {
+    return ctx.user;
   }),
 });

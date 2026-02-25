@@ -1,4 +1,4 @@
-import { verifyJwt } from '../lib/auth.js';
+import { verifyJwt } from '../utils/jwt.js';
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
 
 export function createContext({ req, res }: CreateExpressContextOptions) {

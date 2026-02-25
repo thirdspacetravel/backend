@@ -12,6 +12,7 @@ import { corsOptions } from './config/cors.config.js';
 import { errorHandler } from './middleware/errorHandler.middleware.js';
 import { notFoundHandler } from './middleware/notFoundHandler.middleware.js';
 import { apiRouter } from './api/index.js';
+import { UPLOAD_DIR } from './middleware/upload.middleware.js';
 
 const app: Application = express();
 
@@ -54,6 +55,9 @@ app.use(
 
 // API
 app.use(apiRouter);
+
+// images
+app.use('/images', express.static(UPLOAD_DIR));
 
 // Error Handling
 app.use(notFoundHandler);

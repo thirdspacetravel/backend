@@ -5,6 +5,9 @@ import { prisma } from './config/database.config.js';
 
 const server = app.listen(config.port, () => {
   logger.info(`🚀 Server running on http://localhost:${config.port}`);
+  logger.info(`📡 tRPC endpoint: http://localhost:${config.port}/trpc`);
+  logger.info(`📦 Environment: ${config.env}`);
+  logger.info(`🔧 Node version: ${process.version}`);
 });
 
 const shutdown = async (signal: string) => {

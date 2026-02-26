@@ -11,4 +11,5 @@
 export type * from './models/AdminUser.js'
 export type * from './models/Customer.js'
 export type * from './models/Trip.js'
+export type * from './models/User.js'
 export type * from './commonInputTypes.js'

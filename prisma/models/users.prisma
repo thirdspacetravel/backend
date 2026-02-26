@@ -1,0 +1,33 @@
+model User {
+    id             String        @id @default(uuid())
+    email          String        @unique
+    alternateEmail String?
+    passwordHash   String
+    status         AccountStatus @default(PENDING_VERIFICATION)
+
+    fullName        String
+    dateOfBirth     DateTime?
+    gender          Gender?
+    nationality     String?
+    maritalStatus   MaritalStatus?
+    anniversaryDate DateTime?
+    avatarUrl       String?
+
+    phoneNumber      String?
+    altPhoneNumber   String?
+    preferredContact ContactMethod @default(EMAIL)
+
+    streetAddress String?
+    city          String?
+    state         String?
+    country       String?
+    zipCode       String?
+
+    receiveTripUpdates Boolean @default(true)
+    receivePromoEmails Boolean @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("users")
+}

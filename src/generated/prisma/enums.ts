@@ -20,7 +20,10 @@ export type Gender = (typeof Gender)[keyof typeof Gender]
 
 export const MaritalStatus = {
   SINGLE: 'SINGLE',
-  MARRIED: 'MARRIED'
+  MARRIED: 'MARRIED',
+  DIVORCED: 'DIVORCED',
+  WIDOWED: 'WIDOWED',
+  PARTNERED: 'PARTNERED'
 } as const
 
 export type MaritalStatus = (typeof MaritalStatus)[keyof typeof MaritalStatus]
@@ -41,3 +44,13 @@ export const AdminRole = {
 } as const
 
 export type AdminRole = (typeof AdminRole)[keyof typeof AdminRole]
+
+
+export const AccountStatus = {
+  PENDING_VERIFICATION: 'PENDING_VERIFICATION',
+  VERIFIED: 'VERIFIED',
+  SUSPENDED: 'SUSPENDED',
+  DELETED: 'DELETED'
+} as const
+
+export type AccountStatus = (typeof AccountStatus)[keyof typeof AccountStatus]

@@ -32,3 +32,8 @@ export type Customer = Prisma.CustomerModel
  * 
  */
 export type Trip = Prisma.TripModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel

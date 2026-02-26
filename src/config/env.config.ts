@@ -12,6 +12,12 @@ const envSchema = z.object({
   DATABASE_PASSWORD: z.string(),
   DATABASE_NAME: z.string(),
   JWT_SECRET: z.string(),
+  EMAIL_HOST: z.string(),
+  EMAIL_PORT: z.string(),
+  EMAIL_USER: z.string(),
+  EMAIL_PASS: z.string(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -27,6 +33,12 @@ const env = parsed.success
       DATABASE_PASSWORD: '',
       DATABASE_NAME: '',
       JWT_SECRET: '',
+      EMAIL_HOST: '',
+      EMAIL_PORT: '',
+      EMAIL_USER: '',
+      EMAIL_PASS: '',
+      GOOGLE_CLIENT_ID: '',
+      GOOGLE_CLIENT_SECRET: '',
     };
 
 export const config = {
@@ -38,4 +50,10 @@ export const config = {
   password: env.DATABASE_PASSWORD,
   name: env.DATABASE_NAME,
   jwtSecret: env.JWT_SECRET,
+  emailHost: env.EMAIL_HOST,
+  emailPort: env.EMAIL_PORT,
+  emailUser: env.EMAIL_USER,
+  emailPass: env.EMAIL_PASS,
+  googleClientId: env.GOOGLE_CLIENT_ID,
+  googleClientSecret: env.GOOGLE_CLIENT_SECRET,
 } as const;

@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   AdminUser: 'AdminUser',
   Customer: 'Customer',
-  Trip: 'Trip'
+  Trip: 'Trip',
+  User: 'User'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -151,6 +152,36 @@ export const TripScalarFieldEnum = {
 export type TripScalarFieldEnum = (typeof TripScalarFieldEnum)[keyof typeof TripScalarFieldEnum]
 
 
+export const UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  alternateEmail: 'alternateEmail',
+  passwordHash: 'passwordHash',
+  status: 'status',
+  fullName: 'fullName',
+  dateOfBirth: 'dateOfBirth',
+  gender: 'gender',
+  nationality: 'nationality',
+  maritalStatus: 'maritalStatus',
+  anniversaryDate: 'anniversaryDate',
+  avatarUrl: 'avatarUrl',
+  phoneNumber: 'phoneNumber',
+  altPhoneNumber: 'altPhoneNumber',
+  preferredContact: 'preferredContact',
+  streetAddress: 'streetAddress',
+  city: 'city',
+  state: 'state',
+  country: 'country',
+  zipCode: 'zipCode',
+  receiveTripUpdates: 'receiveTripUpdates',
+  receivePromoEmails: 'receivePromoEmails',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -236,4 +267,24 @@ export const TripOrderByRelevanceFieldEnum = {
 } as const
 
 export type TripOrderByRelevanceFieldEnum = (typeof TripOrderByRelevanceFieldEnum)[keyof typeof TripOrderByRelevanceFieldEnum]
+
+
+export const UserOrderByRelevanceFieldEnum = {
+  id: 'id',
+  email: 'email',
+  alternateEmail: 'alternateEmail',
+  passwordHash: 'passwordHash',
+  fullName: 'fullName',
+  nationality: 'nationality',
+  avatarUrl: 'avatarUrl',
+  phoneNumber: 'phoneNumber',
+  altPhoneNumber: 'altPhoneNumber',
+  streetAddress: 'streetAddress',
+  city: 'city',
+  state: 'state',
+  country: 'country',
+  zipCode: 'zipCode'
+} as const
+
+export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
 

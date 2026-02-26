@@ -7,6 +7,9 @@ enum Gender {
 enum MaritalStatus {
   SINGLE
   MARRIED
+  DIVORCED
+  WIDOWED
+  PARTNERED
 }
 
 enum ContactMethod {
@@ -18,4 +21,11 @@ enum ContactMethod {
 enum AdminRole {
   SUPER_ADMIN
   TRIP_MANAGER
+}
+
+enum AccountStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  SUSPENDED
+  DELETED
 }

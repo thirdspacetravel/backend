@@ -3,3 +3,4 @@ dist
 
 /generated/prisma
 /prisma/migrations
+/uploads

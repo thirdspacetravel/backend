@@ -2,6 +2,7 @@ import type { CorsOptions } from 'cors';
 
 const allowedOrigins = [
   'http://192.168.1.64:5173',
+  'http://localhost:5173',
   'http://192.168.1.35:5173',
   'https://thirdspacetravel.com',
   'https://www.thirdspacetravel.com',

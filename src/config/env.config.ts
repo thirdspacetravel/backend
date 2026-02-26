@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(8080),

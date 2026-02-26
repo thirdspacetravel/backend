@@ -13,19 +13,19 @@ const adapter = new PrismaMariaDb({
   user: config.user,
   password: config.password,
   database: config.name,
-  connectionLimit: 5,
+  connectionLimit: 50,
 });
 
 const prismaClientFactory = () => {
   console.log('✨ Initializing New Prisma Client with MariaDB adapter...');
-
+  console.log(`📡 Connecting to MariaDB at ${config.host} as ${config.user}...`);
   return new PrismaClient({
     adapter,
     log: config.env === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 };
 
-export const prisma = global.prisma ?? prismaClientFactory();
+export const prisma = global.prisma || prismaClientFactory();
 
 if (config.env !== 'production') {
   global.prisma = prisma;

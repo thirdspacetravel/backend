@@ -7,8 +7,37 @@ import { prisma } from '../config/database.config.js';
 import type { GoogleUserInfo } from '@/types/oauth.js';
 import { hashPassword } from '../utils/password.js';
 import { AccountStatus } from '../generated/prisma/enums.js';
+import { v4 as uuidv4 } from 'uuid';
+import { UPLOAD_DIR } from '../middleware/upload.middleware.js';
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+
 const client = new OAuth2Client(config.googleClientId, config.googleClientSecret, 'postmessage');
 const userOAuthRouter = Router();
+
+async function downloadAvatar(url: string): Promise<string | null> {
+  try {
+    const fileName = `${uuidv4()}.jpg`;
+    const filePath = path.join(UPLOAD_DIR, fileName);
+    const response = await axios({
+      url,
+      method: 'GET',
+      responseType: 'stream',
+    });
+
+    return new Promise((resolve, reject) => {
+      const writer = fs.createWriteStream(filePath);
+      response.data.pipe(writer);
+      writer.on('finish', () => resolve(fileName));
+      writer.on('error', reject);
+    });
+  } catch (error) {
+    console.error('Failed to download avatar:', error);
+    return null;
+  }
+}
+
 userOAuthRouter.post('/auth/google', async (req: Request, res: Response) => {
   const { code } = req.body;
 
@@ -25,6 +54,14 @@ userOAuthRouter.post('/auth/google', async (req: Request, res: Response) => {
     });
 
     if (!user) {
+      let localAvatarName = null;
+      if (userData.picture) {
+        try {
+          localAvatarName = await downloadAvatar(userData.picture);
+        } catch (downloadErr) {
+          console.error('Avatar download failed, proceeding without it:', downloadErr);
+        }
+      }
       const passwordHash = await hashPassword(userData.sub);
       user = await prisma.user.create({
         data: {
@@ -34,6 +71,7 @@ userOAuthRouter.post('/auth/google', async (req: Request, res: Response) => {
           status: userData.email_verified
             ? AccountStatus.VERIFIED
             : AccountStatus.PENDING_VERIFICATION,
+          avatarUrl: localAvatarName,
         },
       });
     }

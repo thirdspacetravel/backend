@@ -27,28 +27,29 @@ export type AggregateTrip = {
 }
 
 export type TripAvgAggregateOutputType = {
+  tripNo: number | null
   tripType: number | null
   days: number | null
   nights: number | null
   totalSeats: number | null
-  status: number | null
   priceQuad: number | null
   priceTriple: number | null
   priceDouble: number | null
 }
 
 export type TripSumAggregateOutputType = {
+  tripNo: number | null
   tripType: number | null
   days: number | null
   nights: number | null
   totalSeats: number | null
-  status: number | null
   priceQuad: number | null
   priceTriple: number | null
   priceDouble: number | null
 }
 
 export type TripMinAggregateOutputType = {
+  tripNo: number | null
   id: string | null
   tripName: string | null
   destination: string | null
@@ -61,9 +62,10 @@ export type TripMinAggregateOutputType = {
   dropOffLocation: string | null
   inclusions: string | null
   exclusions: string | null
-  status: number | null
+  status: $Enums.TripStatus | null
   isFeatured: boolean | null
   isAcceptingBookings: boolean | null
+  featuredCategories: $Enums.TripCategory | null
   priceQuad: number | null
   priceTriple: number | null
   priceDouble: number | null
@@ -74,6 +76,7 @@ export type TripMinAggregateOutputType = {
 }
 
 export type TripMaxAggregateOutputType = {
+  tripNo: number | null
   id: string | null
   tripName: string | null
   destination: string | null
@@ -86,9 +89,10 @@ export type TripMaxAggregateOutputType = {
   dropOffLocation: string | null
   inclusions: string | null
   exclusions: string | null
-  status: number | null
+  status: $Enums.TripStatus | null
   isFeatured: boolean | null
   isAcceptingBookings: boolean | null
+  featuredCategories: $Enums.TripCategory | null
   priceQuad: number | null
   priceTriple: number | null
   priceDouble: number | null
@@ -99,6 +103,7 @@ export type TripMaxAggregateOutputType = {
 }
 
 export type TripCountAggregateOutputType = {
+  tripNo: number
   id: number
   tripName: number
   destination: number
@@ -116,6 +121,7 @@ export type TripCountAggregateOutputType = {
   isFeatured: number
   isAcceptingBookings: number
   categories: number
+  featuredCategories: number
   priceQuad: number
   priceTriple: number
   priceDouble: number
@@ -129,28 +135,29 @@ export type TripCountAggregateOutputType = {
 
 
 export type TripAvgAggregateInputType = {
+  tripNo?: true
   tripType?: true
   days?: true
   nights?: true
   totalSeats?: true
-  status?: true
   priceQuad?: true
   priceTriple?: true
   priceDouble?: true
 }
 
 export type TripSumAggregateInputType = {
+  tripNo?: true
   tripType?: true
   days?: true
   nights?: true
   totalSeats?: true
-  status?: true
   priceQuad?: true
   priceTriple?: true
   priceDouble?: true
 }
 
 export type TripMinAggregateInputType = {
+  tripNo?: true
   id?: true
   tripName?: true
   destination?: true
@@ -166,6 +173,7 @@ export type TripMinAggregateInputType = {
   status?: true
   isFeatured?: true
   isAcceptingBookings?: true
+  featuredCategories?: true
   priceQuad?: true
   priceTriple?: true
   priceDouble?: true
@@ -176,6 +184,7 @@ export type TripMinAggregateInputType = {
 }
 
 export type TripMaxAggregateInputType = {
+  tripNo?: true
   id?: true
   tripName?: true
   destination?: true
@@ -191,6 +200,7 @@ export type TripMaxAggregateInputType = {
   status?: true
   isFeatured?: true
   isAcceptingBookings?: true
+  featuredCategories?: true
   priceQuad?: true
   priceTriple?: true
   priceDouble?: true
@@ -201,6 +211,7 @@ export type TripMaxAggregateInputType = {
 }
 
 export type TripCountAggregateInputType = {
+  tripNo?: true
   id?: true
   tripName?: true
   destination?: true
@@ -218,6 +229,7 @@ export type TripCountAggregateInputType = {
   isFeatured?: true
   isAcceptingBookings?: true
   categories?: true
+  featuredCategories?: true
   priceQuad?: true
   priceTriple?: true
   priceDouble?: true
@@ -316,6 +328,7 @@ export type TripGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 export type TripGroupByOutputType = {
+  tripNo: number
   id: string
   tripName: string
   destination: string
@@ -329,10 +342,11 @@ export type TripGroupByOutputType = {
   inclusions: string
   exclusions: string
   itinerary: runtime.JsonValue
-  status: number
+  status: $Enums.TripStatus
   isFeatured: boolean
   isAcceptingBookings: boolean
   categories: runtime.JsonValue
+  featuredCategories: $Enums.TripCategory | null
   priceQuad: number | null
   priceTriple: number | null
   priceDouble: number | null
@@ -367,6 +381,7 @@ export type TripWhereInput = {
   AND?: Prisma.TripWhereInput | Prisma.TripWhereInput[]
   OR?: Prisma.TripWhereInput[]
   NOT?: Prisma.TripWhereInput | Prisma.TripWhereInput[]
+  tripNo?: Prisma.IntFilter<"Trip"> | number
   id?: Prisma.StringFilter<"Trip"> | string
   tripName?: Prisma.StringFilter<"Trip"> | string
   destination?: Prisma.StringFilter<"Trip"> | string
@@ -380,10 +395,11 @@ export type TripWhereInput = {
   inclusions?: Prisma.StringFilter<"Trip"> | string
   exclusions?: Prisma.StringFilter<"Trip"> | string
   itinerary?: Prisma.JsonFilter<"Trip">
-  status?: Prisma.IntFilter<"Trip"> | number
+  status?: Prisma.EnumTripStatusFilter<"Trip"> | $Enums.TripStatus
   isFeatured?: Prisma.BoolFilter<"Trip"> | boolean
   isAcceptingBookings?: Prisma.BoolFilter<"Trip"> | boolean
   categories?: Prisma.JsonFilter<"Trip">
+  featuredCategories?: Prisma.EnumTripCategoryNullableFilter<"Trip"> | $Enums.TripCategory | null
   priceQuad?: Prisma.IntNullableFilter<"Trip"> | number | null
   priceTriple?: Prisma.IntNullableFilter<"Trip"> | number | null
   priceDouble?: Prisma.IntNullableFilter<"Trip"> | number | null
@@ -395,6 +411,7 @@ export type TripWhereInput = {
 }
 
 export type TripOrderByWithRelationInput = {
+  tripNo?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tripName?: Prisma.SortOrder
   destination?: Prisma.SortOrder
@@ -412,6 +429,7 @@ export type TripOrderByWithRelationInput = {
   isFeatured?: Prisma.SortOrder
   isAcceptingBookings?: Prisma.SortOrder
   categories?: Prisma.SortOrder
+  featuredCategories?: Prisma.SortOrderInput | Prisma.SortOrder
   priceQuad?: Prisma.SortOrderInput | Prisma.SortOrder
   priceTriple?: Prisma.SortOrderInput | Prisma.SortOrder
   priceDouble?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -424,6 +442,7 @@ export type TripOrderByWithRelationInput = {
 }
 
 export type TripWhereUniqueInput = Prisma.AtLeast<{
+  tripNo?: number
   id?: string
   AND?: Prisma.TripWhereInput | Prisma.TripWhereInput[]
   OR?: Prisma.TripWhereInput[]
@@ -440,10 +459,11 @@ export type TripWhereUniqueInput = Prisma.AtLeast<{
   inclusions?: Prisma.StringFilter<"Trip"> | string
   exclusions?: Prisma.StringFilter<"Trip"> | string
   itinerary?: Prisma.JsonFilter<"Trip">
-  status?: Prisma.IntFilter<"Trip"> | number
+  status?: Prisma.EnumTripStatusFilter<"Trip"> | $Enums.TripStatus
   isFeatured?: Prisma.BoolFilter<"Trip"> | boolean
   isAcceptingBookings?: Prisma.BoolFilter<"Trip"> | boolean
   categories?: Prisma.JsonFilter<"Trip">
+  featuredCategories?: Prisma.EnumTripCategoryNullableFilter<"Trip"> | $Enums.TripCategory | null
   priceQuad?: Prisma.IntNullableFilter<"Trip"> | number | null
   priceTriple?: Prisma.IntNullableFilter<"Trip"> | number | null
   priceDouble?: Prisma.IntNullableFilter<"Trip"> | number | null
@@ -452,9 +472,10 @@ export type TripWhereUniqueInput = Prisma.AtLeast<{
   images?: Prisma.JsonFilter<"Trip">
   createdAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
-}, "id">
+}, "tripNo" | "id">
 
 export type TripOrderByWithAggregationInput = {
+  tripNo?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tripName?: Prisma.SortOrder
   destination?: Prisma.SortOrder
@@ -472,6 +493,7 @@ export type TripOrderByWithAggregationInput = {
   isFeatured?: Prisma.SortOrder
   isAcceptingBookings?: Prisma.SortOrder
   categories?: Prisma.SortOrder
+  featuredCategories?: Prisma.SortOrderInput | Prisma.SortOrder
   priceQuad?: Prisma.SortOrderInput | Prisma.SortOrder
   priceTriple?: Prisma.SortOrderInput | Prisma.SortOrder
   priceDouble?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -491,6 +513,7 @@ export type TripScalarWhereWithAggregatesInput = {
   AND?: Prisma.TripScalarWhereWithAggregatesInput | Prisma.TripScalarWhereWithAggregatesInput[]
   OR?: Prisma.TripScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TripScalarWhereWithAggregatesInput | Prisma.TripScalarWhereWithAggregatesInput[]
+  tripNo?: Prisma.IntWithAggregatesFilter<"Trip"> | number
   id?: Prisma.StringWithAggregatesFilter<"Trip"> | string
   tripName?: Prisma.StringWithAggregatesFilter<"Trip"> | string
   destination?: Prisma.StringWithAggregatesFilter<"Trip"> | string
@@ -504,10 +527,11 @@ export type TripScalarWhereWithAggregatesInput = {
   inclusions?: Prisma.StringWithAggregatesFilter<"Trip"> | string
   exclusions?: Prisma.StringWithAggregatesFilter<"Trip"> | string
   itinerary?: Prisma.JsonWithAggregatesFilter<"Trip">
-  status?: Prisma.IntWithAggregatesFilter<"Trip"> | number
+  status?: Prisma.EnumTripStatusWithAggregatesFilter<"Trip"> | $Enums.TripStatus
   isFeatured?: Prisma.BoolWithAggregatesFilter<"Trip"> | boolean
   isAcceptingBookings?: Prisma.BoolWithAggregatesFilter<"Trip"> | boolean
   categories?: Prisma.JsonWithAggregatesFilter<"Trip">
+  featuredCategories?: Prisma.EnumTripCategoryNullableWithAggregatesFilter<"Trip"> | $Enums.TripCategory | null
   priceQuad?: Prisma.IntNullableWithAggregatesFilter<"Trip"> | number | null
   priceTriple?: Prisma.IntNullableWithAggregatesFilter<"Trip"> | number | null
   priceDouble?: Prisma.IntNullableWithAggregatesFilter<"Trip"> | number | null
@@ -532,10 +556,11 @@ export type TripCreateInput = {
   inclusions?: string
   exclusions?: string
   itinerary: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  status?: number
+  status?: $Enums.TripStatus
   isFeatured?: boolean
   isAcceptingBookings?: boolean
   categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: $Enums.TripCategory | null
   priceQuad?: number | null
   priceTriple?: number | null
   priceDouble?: number | null
@@ -547,6 +572,7 @@ export type TripCreateInput = {
 }
 
 export type TripUncheckedCreateInput = {
+  tripNo?: number
   id?: string
   tripName?: string
   destination?: string
@@ -560,10 +586,11 @@ export type TripUncheckedCreateInput = {
   inclusions?: string
   exclusions?: string
   itinerary: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  status?: number
+  status?: $Enums.TripStatus
   isFeatured?: boolean
   isAcceptingBookings?: boolean
   categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: $Enums.TripCategory | null
   priceQuad?: number | null
   priceTriple?: number | null
   priceDouble?: number | null
@@ -588,10 +615,11 @@ export type TripUpdateInput = {
   inclusions?: Prisma.StringFieldUpdateOperationsInput | string
   exclusions?: Prisma.StringFieldUpdateOperationsInput | string
   itinerary?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  status?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTripStatusFieldUpdateOperationsInput | $Enums.TripStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isAcceptingBookings?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: Prisma.NullableEnumTripCategoryFieldUpdateOperationsInput | $Enums.TripCategory | null
   priceQuad?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceTriple?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceDouble?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -603,6 +631,7 @@ export type TripUpdateInput = {
 }
 
 export type TripUncheckedUpdateInput = {
+  tripNo?: Prisma.IntFieldUpdateOperationsInput | number
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tripName?: Prisma.StringFieldUpdateOperationsInput | string
   destination?: Prisma.StringFieldUpdateOperationsInput | string
@@ -616,10 +645,11 @@ export type TripUncheckedUpdateInput = {
   inclusions?: Prisma.StringFieldUpdateOperationsInput | string
   exclusions?: Prisma.StringFieldUpdateOperationsInput | string
   itinerary?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  status?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTripStatusFieldUpdateOperationsInput | $Enums.TripStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isAcceptingBookings?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: Prisma.NullableEnumTripCategoryFieldUpdateOperationsInput | $Enums.TripCategory | null
   priceQuad?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceTriple?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceDouble?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -631,6 +661,7 @@ export type TripUncheckedUpdateInput = {
 }
 
 export type TripCreateManyInput = {
+  tripNo?: number
   id?: string
   tripName?: string
   destination?: string
@@ -644,10 +675,11 @@ export type TripCreateManyInput = {
   inclusions?: string
   exclusions?: string
   itinerary: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  status?: number
+  status?: $Enums.TripStatus
   isFeatured?: boolean
   isAcceptingBookings?: boolean
   categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: $Enums.TripCategory | null
   priceQuad?: number | null
   priceTriple?: number | null
   priceDouble?: number | null
@@ -672,10 +704,11 @@ export type TripUpdateManyMutationInput = {
   inclusions?: Prisma.StringFieldUpdateOperationsInput | string
   exclusions?: Prisma.StringFieldUpdateOperationsInput | string
   itinerary?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  status?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTripStatusFieldUpdateOperationsInput | $Enums.TripStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isAcceptingBookings?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: Prisma.NullableEnumTripCategoryFieldUpdateOperationsInput | $Enums.TripCategory | null
   priceQuad?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceTriple?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceDouble?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -687,6 +720,7 @@ export type TripUpdateManyMutationInput = {
 }
 
 export type TripUncheckedUpdateManyInput = {
+  tripNo?: Prisma.IntFieldUpdateOperationsInput | number
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tripName?: Prisma.StringFieldUpdateOperationsInput | string
   destination?: Prisma.StringFieldUpdateOperationsInput | string
@@ -700,10 +734,11 @@ export type TripUncheckedUpdateManyInput = {
   inclusions?: Prisma.StringFieldUpdateOperationsInput | string
   exclusions?: Prisma.StringFieldUpdateOperationsInput | string
   itinerary?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  status?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTripStatusFieldUpdateOperationsInput | $Enums.TripStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isAcceptingBookings?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: Prisma.NullableEnumTripCategoryFieldUpdateOperationsInput | $Enums.TripCategory | null
   priceQuad?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceTriple?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceDouble?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -721,6 +756,7 @@ export type TripOrderByRelevanceInput = {
 }
 
 export type TripCountOrderByAggregateInput = {
+  tripNo?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tripName?: Prisma.SortOrder
   destination?: Prisma.SortOrder
@@ -738,6 +774,7 @@ export type TripCountOrderByAggregateInput = {
   isFeatured?: Prisma.SortOrder
   isAcceptingBookings?: Prisma.SortOrder
   categories?: Prisma.SortOrder
+  featuredCategories?: Prisma.SortOrder
   priceQuad?: Prisma.SortOrder
   priceTriple?: Prisma.SortOrder
   priceDouble?: Prisma.SortOrder
@@ -749,17 +786,18 @@ export type TripCountOrderByAggregateInput = {
 }
 
 export type TripAvgOrderByAggregateInput = {
+  tripNo?: Prisma.SortOrder
   tripType?: Prisma.SortOrder
   days?: Prisma.SortOrder
   nights?: Prisma.SortOrder
   totalSeats?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   priceQuad?: Prisma.SortOrder
   priceTriple?: Prisma.SortOrder
   priceDouble?: Prisma.SortOrder
 }
 
 export type TripMaxOrderByAggregateInput = {
+  tripNo?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tripName?: Prisma.SortOrder
   destination?: Prisma.SortOrder
@@ -775,6 +813,7 @@ export type TripMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isAcceptingBookings?: Prisma.SortOrder
+  featuredCategories?: Prisma.SortOrder
   priceQuad?: Prisma.SortOrder
   priceTriple?: Prisma.SortOrder
   priceDouble?: Prisma.SortOrder
@@ -785,6 +824,7 @@ export type TripMaxOrderByAggregateInput = {
 }
 
 export type TripMinOrderByAggregateInput = {
+  tripNo?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tripName?: Prisma.SortOrder
   destination?: Prisma.SortOrder
@@ -800,6 +840,7 @@ export type TripMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isAcceptingBookings?: Prisma.SortOrder
+  featuredCategories?: Prisma.SortOrder
   priceQuad?: Prisma.SortOrder
   priceTriple?: Prisma.SortOrder
   priceDouble?: Prisma.SortOrder
@@ -810,11 +851,11 @@ export type TripMinOrderByAggregateInput = {
 }
 
 export type TripSumOrderByAggregateInput = {
+  tripNo?: Prisma.SortOrder
   tripType?: Prisma.SortOrder
   days?: Prisma.SortOrder
   nights?: Prisma.SortOrder
   totalSeats?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   priceQuad?: Prisma.SortOrder
   priceTriple?: Prisma.SortOrder
   priceDouble?: Prisma.SortOrder
@@ -828,6 +869,14 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type EnumTripStatusFieldUpdateOperationsInput = {
+  set?: $Enums.TripStatus
+}
+
+export type NullableEnumTripCategoryFieldUpdateOperationsInput = {
+  set?: $Enums.TripCategory | null
+}
+
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
@@ -839,6 +888,7 @@ export type IntFieldUpdateOperationsInput = {
 
 
 export type TripSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  tripNo?: boolean
   id?: boolean
   tripName?: boolean
   destination?: boolean
@@ -856,6 +906,7 @@ export type TripSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   isFeatured?: boolean
   isAcceptingBookings?: boolean
   categories?: boolean
+  featuredCategories?: boolean
   priceQuad?: boolean
   priceTriple?: boolean
   priceDouble?: boolean
@@ -869,6 +920,7 @@ export type TripSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 
 export type TripSelectScalar = {
+  tripNo?: boolean
   id?: boolean
   tripName?: boolean
   destination?: boolean
@@ -886,6 +938,7 @@ export type TripSelectScalar = {
   isFeatured?: boolean
   isAcceptingBookings?: boolean
   categories?: boolean
+  featuredCategories?: boolean
   priceQuad?: boolean
   priceTriple?: boolean
   priceDouble?: boolean
@@ -896,12 +949,13 @@ export type TripSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TripOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tripName" | "destination" | "tripType" | "fullOverview" | "days" | "nights" | "totalSeats" | "pickupLocation" | "dropOffLocation" | "inclusions" | "exclusions" | "itinerary" | "status" | "isFeatured" | "isAcceptingBookings" | "categories" | "priceQuad" | "priceTriple" | "priceDouble" | "startDateTime" | "endDateTime" | "images" | "createdAt" | "updatedAt", ExtArgs["result"]["trip"]>
+export type TripOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"tripNo" | "id" | "tripName" | "destination" | "tripType" | "fullOverview" | "days" | "nights" | "totalSeats" | "pickupLocation" | "dropOffLocation" | "inclusions" | "exclusions" | "itinerary" | "status" | "isFeatured" | "isAcceptingBookings" | "categories" | "featuredCategories" | "priceQuad" | "priceTriple" | "priceDouble" | "startDateTime" | "endDateTime" | "images" | "createdAt" | "updatedAt", ExtArgs["result"]["trip"]>
 
 export type $TripPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Trip"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    tripNo: number
     id: string
     tripName: string
     destination: string
@@ -915,10 +969,11 @@ export type $TripPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     inclusions: string
     exclusions: string
     itinerary: runtime.JsonValue
-    status: number
+    status: $Enums.TripStatus
     isFeatured: boolean
     isAcceptingBookings: boolean
     categories: runtime.JsonValue
+    featuredCategories: $Enums.TripCategory | null
     priceQuad: number | null
     priceTriple: number | null
     priceDouble: number | null
@@ -1010,8 +1065,8 @@ export interface TripDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    * // Get first 10 Trips
    * const trips = await prisma.trip.findMany({ take: 10 })
    * 
-   * // Only select the `id`
-   * const tripWithIdOnly = await prisma.trip.findMany({ select: { id: true } })
+   * // Only select the `tripNo`
+   * const tripWithTripNoOnly = await prisma.trip.findMany({ select: { tripNo: true } })
    * 
    */
   findMany<T extends TripFindManyArgs>(args?: Prisma.SelectSubset<T, TripFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TripPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -1296,6 +1351,7 @@ export interface Prisma__TripClient<T, Null = never, ExtArgs extends runtime.Typ
  * Fields of the Trip model
  */
 export interface TripFieldRefs {
+  readonly tripNo: Prisma.FieldRef<"Trip", 'Int'>
   readonly id: Prisma.FieldRef<"Trip", 'String'>
   readonly tripName: Prisma.FieldRef<"Trip", 'String'>
   readonly destination: Prisma.FieldRef<"Trip", 'String'>
@@ -1309,10 +1365,11 @@ export interface TripFieldRefs {
   readonly inclusions: Prisma.FieldRef<"Trip", 'String'>
   readonly exclusions: Prisma.FieldRef<"Trip", 'String'>
   readonly itinerary: Prisma.FieldRef<"Trip", 'Json'>
-  readonly status: Prisma.FieldRef<"Trip", 'Int'>
+  readonly status: Prisma.FieldRef<"Trip", 'TripStatus'>
   readonly isFeatured: Prisma.FieldRef<"Trip", 'Boolean'>
   readonly isAcceptingBookings: Prisma.FieldRef<"Trip", 'Boolean'>
   readonly categories: Prisma.FieldRef<"Trip", 'Json'>
+  readonly featuredCategories: Prisma.FieldRef<"Trip", 'TripCategory'>
   readonly priceQuad: Prisma.FieldRef<"Trip", 'Int'>
   readonly priceTriple: Prisma.FieldRef<"Trip", 'Int'>
   readonly priceDouble: Prisma.FieldRef<"Trip", 'Int'>

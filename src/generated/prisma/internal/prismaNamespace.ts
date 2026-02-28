@@ -759,6 +759,7 @@ export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typ
 
 
 export const TripScalarFieldEnum = {
+  tripNo: 'tripNo',
   id: 'id',
   tripName: 'tripName',
   destination: 'destination',
@@ -776,6 +777,7 @@ export const TripScalarFieldEnum = {
   isFeatured: 'isFeatured',
   isAcceptingBookings: 'isAcceptingBookings',
   categories: 'categories',
+  featuredCategories: 'featuredCategories',
   priceQuad: 'priceQuad',
   priceTriple: 'priceTriple',
   priceDouble: 'priceDouble',
@@ -999,6 +1001,20 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'TripStatus'
+ */
+export type EnumTripStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TripStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'TripCategory'
+ */
+export type EnumTripCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TripCategory'>
     
 
 

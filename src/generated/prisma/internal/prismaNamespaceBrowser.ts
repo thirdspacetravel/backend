@@ -122,6 +122,7 @@ export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typ
 
 
 export const TripScalarFieldEnum = {
+  tripNo: 'tripNo',
   id: 'id',
   tripName: 'tripName',
   destination: 'destination',
@@ -139,6 +140,7 @@ export const TripScalarFieldEnum = {
   isFeatured: 'isFeatured',
   isAcceptingBookings: 'isAcceptingBookings',
   categories: 'categories',
+  featuredCategories: 'featuredCategories',
   priceQuad: 'priceQuad',
   priceTriple: 'priceTriple',
   priceDouble: 'priceDouble',

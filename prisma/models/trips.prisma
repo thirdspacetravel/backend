@@ -1,5 +1,6 @@
 model Trip {
-    id              String @id @default(cuid())
+    tripNo          Int    @id @default(autoincrement())
+    id              String @unique @default(cuid())
     tripName        String @default("Untitled Trip")
     destination     String @default("Destination Not Set")
     tripType        Int?
@@ -14,17 +15,17 @@ model Trip {
 
     itinerary Json
 
-    status              Int     @default(1)
-    isFeatured          Boolean @default(false)
-    isAcceptingBookings Boolean @default(false)
+    status              TripStatus @default(DRAFT)
+    isFeatured          Boolean    @default(false)
+    isAcceptingBookings Boolean    @default(false)
 
     // Stored as JSON: string[]
-    categories Json @default("[]")
-
+    categories         Json          @default("[]")
+    featuredCategories TripCategory?
     // Flattened Price structure
-    priceQuad   Int?
-    priceTriple Int?
-    priceDouble Int?
+    priceQuad          Int?
+    priceTriple        Int?
+    priceDouble        Int?
 
     // Combined Date and Time
     startDateTime DateTime?

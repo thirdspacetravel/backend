@@ -29,3 +29,19 @@ enum AccountStatus {
   SUSPENDED
   DELETED
 }
+
+enum TripStatus {
+  DRAFT
+  PUBLISHED
+  COMPLETED
+  CANCELLED
+}
+
+enum TripCategory {
+  WINTER_EXPEDITION @map("WINTER EXPEDITION")
+  SUMMER_SPECIAL    @map("SUMMER SPECIAL")
+  TREKKING          @map("TREKKING")
+  BIKING_TRIP       @map("BIKING TRIP")
+  BACKPACKING       @map("BACKPACKING")
+  WEEKEND_GETAWAY   @map("WEEKEND GETAWAY")
+}

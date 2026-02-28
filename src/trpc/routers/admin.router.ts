@@ -2,11 +2,12 @@ import { TRPCError } from '@trpc/server';
 import { prisma } from '../../config/database.config.js';
 import { router, adminProcedure, publicProcedure } from '../trpc.js';
 import z from 'zod';
-import type { Prisma } from '../../generated/prisma/browser.js';
+import { TripCategory, TripStatus, type Prisma } from '../../generated/prisma/browser.js';
 import { config } from '../../config/env.config.js';
 import { signJwt } from '../../utils/jwt.js';
 import { comparePassword } from '../../utils/password.js';
 import type { DayData } from '../../types/admin.trpc.js';
+const LIMIT = 10;
 export const adminRouter = router({
   login: publicProcedure
     .input(z.object({ username: z.string(), password: z.string() }))
@@ -81,21 +82,48 @@ export const adminRouter = router({
         categories: [],
       },
     });
-    return {
-      ...trip,
-      itinerary: trip.itinerary as unknown as DayData[],
-      categories: trip.categories as unknown as string[],
-      images: trip.images as unknown as string[],
-    };
+    if (!trip) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to create draft trip',
+      });
+    }
+    return { success: true, tripId: trip.id };
   }),
-  fetchTrips: adminProcedure.query(async () => {
-    const trips = await prisma.trip.findMany();
-    return trips.map(trip => ({
-      ...trip,
-      itinerary: trip.itinerary as unknown as DayData[],
-      categories: trip.categories as unknown as string[],
-      images: trip.images as unknown as string[],
-    }));
+  fetchTrips: adminProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+      }),
+    )
+    .query(async ({ input }) => {
+      const skip = (input.page - 1) * LIMIT;
+
+      const trips = await prisma.trip.findMany({
+        take: LIMIT,
+        skip: skip,
+        orderBy: {
+          tripNo: 'desc',
+        },
+      });
+
+      return trips.map(trip => {
+        const { createdAt, updatedAt, ...tripWithoutSensitiveData } = trip;
+        return {
+          ...tripWithoutSensitiveData,
+          itinerary: trip.itinerary as unknown as DayData[],
+          categories: trip.categories as unknown as string[],
+          images: trip.images as unknown as string[],
+        };
+      });
+    }),
+
+  getTripsCount: adminProcedure.query(async () => {
+    const count = await prisma.trip.count();
+    return {
+      total: count,
+      totalPages: Math.ceil(count / LIMIT),
+    };
   }),
   fetchTripById: adminProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
     const trip = await prisma.trip.findUnique({
@@ -104,8 +132,9 @@ export const adminRouter = router({
     if (!trip) {
       throw new TRPCError({ code: 'NOT_FOUND', message: 'Trip not found' });
     }
+    const { createdAt, updatedAt, ...tripWithoutSensitiveData } = trip;
     return {
-      ...trip,
+      ...tripWithoutSensitiveData,
       itinerary: trip.itinerary as unknown as DayData[],
       categories: trip.categories as unknown as string[],
       images: trip.images as unknown as string[],
@@ -139,9 +168,10 @@ export const adminRouter = router({
         images: z.array(z.string()),
         startDateTime: z.coerce.date().nullable(),
         endDateTime: z.coerce.date().nullable(),
-        status: z.number(),
+        status: z.enum(TripStatus),
         isFeatured: z.boolean(),
         isAcceptingBookings: z.boolean(),
+        featuredCategories: z.enum(TripCategory).nullable(),
       }),
     )
     .mutation(async ({ input }) => {
@@ -170,8 +200,47 @@ export const adminRouter = router({
           status: input.status,
           isFeatured: input.isFeatured,
           isAcceptingBookings: input.isAcceptingBookings,
+          featuredCategories: input.featuredCategories,
         },
       });
       return { success: true };
+    }),
+  deleteTrip: adminProcedure
+    .input(
+      z.object({
+        id: z.string(), // or z.number() depending on your DB schema
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+
+      try {
+        // 1. Check if the trip exists (optional but recommended)
+        const trip = await prisma.trip.findUnique({
+          where: { id },
+        });
+
+        if (!trip) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Trip not found or already deleted.',
+          });
+        }
+
+        // 2. Perform the deletion
+        await prisma.trip.delete({
+          where: { id },
+        });
+
+        return { success: true, deletedId: id };
+      } catch (error) {
+        if (error instanceof TRPCError) throw error;
+
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to delete trip. It might be linked to existing bookings.',
+          cause: error,
+        });
+      }
     }),
 });

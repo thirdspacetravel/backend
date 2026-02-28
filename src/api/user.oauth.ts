@@ -4,7 +4,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../config/database.config.js';
-import type { GoogleUserInfo } from '@/types/oauth.js';
+import type { GoogleUserInfo } from '../types/oauth.js';
 import { hashPassword } from '../utils/password.js';
 import { AccountStatus } from '../generated/prisma/enums.js';
 import { v4 as uuidv4 } from 'uuid';

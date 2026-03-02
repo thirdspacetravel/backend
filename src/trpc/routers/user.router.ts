@@ -1,37 +1,86 @@
 import { config } from '../../config/env.config.js';
 import { router, publicProcedure, protectedProcedure } from '../trpc.js';
-import { signJwt } from '../../utils/jwt.js';
+import { signJwt, signVerificationJwt, verifyJwt } from '../../utils/jwt.js';
 import { comparePassword, hashPassword } from '../../utils/password.js';
 import z from 'zod';
 import { prisma } from '../../config/database.config.js';
 import { TRPCError } from '@trpc/server';
-import { AccountStatus, ContactMethod, type User } from '../../generated/prisma/browser.js';
+import {
+  AccountStatus,
+  ContactMethod,
+  Gender,
+  MaritalStatus,
+  type User,
+} from '../../generated/prisma/browser.js';
+import { sendEmail } from '../../utils/mailer.js';
+import { validateUserProfile } from '../../utils/validator.js';
+import type { PaytmParamsBody } from 'paytmchecksum';
+import { PaytmHelper } from '../../utils/paytmHelpher.js';
+import axios from 'axios';
 
 type UserDataType = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'passwordHash'>;
 
-export const userData = z.object({
-  email: z.email(),
-  alternateEmail: z.email().nullable(),
-  status: z.enum(AccountStatus),
-  fullName: z.string().min(1),
-  dateOfBirth: z.coerce.date().nullable(),
-  gender: z.string().nullable(),
-  nationality: z.string().nullable(),
-  maritalStatus: z.string().nullable(),
-  anniversaryDate: z.coerce.date().nullable(),
-  avatarUrl: z.string().nullable(),
-  phoneNumber: z.string().nullable(),
-  altPhoneNumber: z.string().nullable(),
-  preferredContact: z.enum(ContactMethod),
-  streetAddress: z.string().nullable(),
-  city: z.string().nullable(),
-  state: z.string().nullable(),
-  country: z.string().nullable(),
-  zipCode: z.string().nullable(),
-  receiveTripUpdates: z.boolean(),
-  receivePromoEmails: z.boolean(),
-});
+const packageOptions = ['Quad Sharing', 'Triple Sharing', 'Double Sharing'];
 
+export const verificationEmailHtml = (url: string) => `
+  <div style="font-family: 'Poppins', sans-serif; padding: 20px; color: #333;">
+    <h2 style="color: #4A90E2;">Welcome to Third Space Travel!</h2>
+    <p>Please click the button below to verify your email address and activate your account.</p>
+    <a href="${url}" style="
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4A90E2;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 10px;
+    ">Verify Email</a>
+    <p style="margin-top: 20px; font-size: 12px; color: #888;">
+      If you did not request this, please ignore this email.
+    </p>
+  </div>
+`;
+
+export const userData = z
+  .object({
+    email: z.email(),
+    fullName: z.string().trim().min(1, 'Full name is required'),
+    alternateEmail: z.email().nullable().or(z.literal('')),
+    dateOfBirth: z.preprocess(arg => (arg === '' ? null : arg), z.coerce.date().nullable()),
+    gender: z.enum(Gender).nullable().or(z.literal('')),
+    nationality: z.string().trim().nullable().or(z.literal('')),
+    maritalStatus: z.enum(MaritalStatus).nullable().or(z.literal('')),
+    anniversaryDate: z.preprocess(arg => (arg === '' ? null : arg), z.coerce.date().nullable()),
+    avatarUrl: z.url().nullable().or(z.literal('')),
+    phoneNumber: z.string().trim().nullable().or(z.literal('')),
+    altPhoneNumber: z.string().trim().nullable().or(z.literal('')),
+    upiId: z.string().trim().nullable().or(z.literal('')),
+    streetAddress: z.string().trim().nullable().or(z.literal('')),
+    city: z.string().trim().nullable().or(z.literal('')),
+    state: z.string().trim().nullable().or(z.literal('')),
+    country: z.string().trim().nullable().or(z.literal('')),
+    zipCode: z.string().trim().nullable().or(z.literal('')),
+    status: z.enum(AccountStatus).default(AccountStatus.PENDING_VERIFICATION),
+    preferredContact: z.enum(ContactMethod).default(ContactMethod.EMAIL),
+    receiveTripUpdates: z.boolean().default(true),
+    receivePromoEmails: z.boolean().default(false),
+  })
+  .transform(data => {
+    return {
+      ...data,
+      alternateEmail: data.alternateEmail === '' ? null : data.alternateEmail,
+      nationality: data.nationality === '' ? null : data.nationality,
+      avatarUrl: data.avatarUrl === '' ? null : data.avatarUrl,
+      phoneNumber: data.phoneNumber === '' ? null : data.phoneNumber,
+      altPhoneNumber: data.altPhoneNumber === '' ? null : data.altPhoneNumber,
+      upiId: data.upiId === '' ? null : data.upiId,
+      streetAddress: data.streetAddress === '' ? null : data.streetAddress,
+      city: data.city === '' ? null : data.city,
+      state: data.state === '' ? null : data.state,
+      country: data.country === '' ? null : data.country,
+      zipCode: data.zipCode === '' ? null : data.zipCode,
+    };
+  });
 export const userRouter = router({
   login: publicProcedure
     .input(
@@ -46,13 +95,32 @@ export const userRouter = router({
       if (!user) {
         throw new TRPCError({ message: 'Invalid credentials', code: 'UNAUTHORIZED' });
       }
-
       const valid = await comparePassword(input.password, user.passwordHash);
 
       if (!valid) {
         throw new TRPCError({ message: 'Invalid credentials', code: 'UNAUTHORIZED' });
       }
+      if (user.status === 'SUSPENDED') {
+        throw new TRPCError({
+          message: 'This account is suspended. Please contact support.',
+          code: 'FORBIDDEN',
+        });
+      }
+      if (user.status !== 'VERIFIED') {
+        const token = signVerificationJwt({ id: user.id });
+        const url = `${config.frontendUrl}/verify/${token}`;
 
+        const result = await sendEmail({
+          to: user.email,
+          subject: 'Verify your Email for Third Space Travel',
+          text: `Click this link to verify: ${url}`,
+          html: verificationEmailHtml(url),
+        });
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: `Please verify your email to log in. A new verification email has been sent to ${user.email}.`,
+        });
+      }
       const token = signJwt({
         id: user.id,
         username: user.fullName,
@@ -84,7 +152,14 @@ export const userRouter = router({
     .mutation(async ({ input }) => {
       const existingUser = await prisma.user.findUnique({ where: { email: input.email } });
       if (existingUser) {
-        throw new TRPCError({ message: 'Email already in use', code: 'CONFLICT' });
+        if (existingUser.status === 'SUSPENDED') {
+          throw new TRPCError({
+            message: 'This email is suspended. Please contact support.',
+            code: 'FORBIDDEN',
+          });
+        } else {
+          throw new TRPCError({ message: 'Email already in use', code: 'CONFLICT' });
+        }
       }
       const passwordHash = await hashPassword(input.password);
       const newUser = await prisma.user.create({
@@ -94,7 +169,16 @@ export const userRouter = router({
           passwordHash,
         },
       });
-      return { success: true };
+      const token = signVerificationJwt({ id: newUser.id });
+      const url = `${config.frontendUrl}/verify/${token}`;
+
+      const result = await sendEmail({
+        to: newUser.email,
+        subject: 'Verify your Email for Third Space Travel',
+        text: `Click this link to verify: ${url}`,
+        html: verificationEmailHtml(url),
+      });
+      return { success: true, emailSent: result.success };
     }),
   getMe: protectedProcedure.query(async ({ ctx }) => {
     const user = await prisma.user.findUnique({ where: { id: ctx.user.id } });
@@ -108,9 +192,10 @@ export const userRouter = router({
     >;
   }),
   updateMe: protectedProcedure.input(userData).mutation(async ({ input, ctx }) => {
+    const { email, ...inputWithoutEmail } = input;
     const updatedUser = await prisma.user.update({
       where: { id: ctx.user.id },
-      data: input as UserDataType,
+      data: inputWithoutEmail as Omit<UserDataType, 'email'>,
     });
     return updatedUser;
   }),
@@ -118,8 +203,12 @@ export const userRouter = router({
     if (!ctx.user || ctx.user.role !== 'user') {
       return { authenticated: false, user: null };
     }
-    const user = await prisma.user.findUnique({ where: { id: ctx.user.id } });
-    if (!user) {
+    // Single lightweight query — only fetch what the response needs
+    const user = await prisma.user.findUnique({
+      where: { id: ctx.user.id },
+      select: { status: true, fullName: true, email: true, avatarUrl: true },
+    });
+    if (!user || user.status === 'SUSPENDED') {
       return { authenticated: false, user: null };
     }
     return {
@@ -185,5 +274,223 @@ export const userRouter = router({
         },
       });
       return true;
+    }),
+  initializePayment: protectedProcedure
+    .input(
+      z.object({
+        tripId: z.string(),
+        roomType: z.number().min(1).max(3),
+        adults: z.number().min(1),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const trip = await prisma.trip.findUnique({
+        where: {
+          id: input.tripId,
+        },
+      });
+      if (!trip) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Invalid trip ID provided.',
+        });
+      }
+      if (trip.status !== 'PUBLISHED') {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Cannot book a cancelled/completed trip.',
+        });
+      }
+      if (!trip.isAcceptingBookings) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'This trip is not accepting bookings at the moment.',
+        });
+      }
+      if (trip.priceQuad === null && trip.priceTriple === null && trip.priceDouble === null) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Trip pricing information is incomplete.',
+        });
+      }
+      const user = await prisma.user.findUnique({
+        where: { id: ctx.user.id },
+      });
+      if (!user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'User not found.',
+        });
+      }
+      const userdatavalid = validateUserProfile(user);
+      if (userdatavalid.isValid === false) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message:
+            'Please complete your profile information before booking a trip.' +
+            JSON.stringify(userdatavalid.errors),
+        });
+      }
+      const prices = [trip.priceQuad, trip.priceTriple, trip.priceDouble];
+      const price = prices[input.roomType - 1];
+      if (!price) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Invalid room type selected.',
+        });
+      }
+      const adults = input.adults;
+      const totalAmount = Number(price) * Number(adults);
+
+      if (isNaN(totalAmount) || totalAmount <= 0) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Invalid calculation of total amount.',
+        });
+      }
+      const booking = await prisma.booking.create({
+        data: {
+          tripid: input.tripId,
+          userid: ctx.user.id,
+          roomtype: packageOptions[input.roomType - 1] || 'Quad Sharing',
+          adults: input.adults,
+          amount: totalAmount,
+        },
+      });
+      if (!booking) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create booking record.',
+        });
+      }
+
+      const paytmParamsBody: PaytmParamsBody = {
+        requestType: 'Payment',
+        mid: config.paytmMid,
+        websiteName: config.paytmWebsite,
+        orderId: booking.id,
+        callbackUrl: config.paytmCallbackUrl,
+        txnAmount: {
+          value: totalAmount.toFixed(2),
+          currency: 'INR',
+        },
+        userInfo: {
+          custId: user.id,
+        },
+      };
+      const checksum = await PaytmHelper.generateSignature(
+        paytmParamsBody,
+        config.paytmMerchantKey,
+      );
+
+      // 2. Make API Call to Paytm
+      const postData = {
+        head: { signature: checksum },
+        body: paytmParamsBody,
+      };
+
+      try {
+        console.log('Sending to Paytm:', JSON.stringify(postData, null, 2));
+
+        const response = await axios.post(
+          `https://securestage.paytmpayments.com/theia/api/v1/initiateTransaction?mid=${config.paytmMid}&orderId=${booking.id}`,
+          postData,
+        );
+
+        console.log('Paytm Response:', response.data);
+
+        return {
+          txnToken: response.data.body.txnToken as string,
+          orderId: booking.id,
+          mid: config.paytmMid,
+          amount: totalAmount.toFixed(2),
+        };
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error('Axios Error Data:', error.response?.data);
+          console.error('Axios Error Status:', error.response?.status);
+        } else {
+          console.error('Generic Error:', error);
+        }
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: {
+            resultStatus: 'TXN_FAILURE',
+          },
+        });
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to communicate with payment gateway.',
+        });
+      }
+    }),
+  sendVerificationEmail: protectedProcedure
+    .input(z.object({ email: z.email() }))
+    .mutation(async ({ input }) => {
+      const { email } = input;
+
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+      const token = signVerificationJwt({ id: user.id });
+      const url = `${config.frontendUrl}/verify/${token}`;
+      console.log('Generated verification Token:', token);
+      await sendEmail({
+        to: email,
+        subject: 'Verify your Email for Third Space Travel',
+        text: `Click this link to verify: ${url}`,
+        html: verificationEmailHtml(url),
+      });
+
+      return { success: true };
+    }),
+  verifyEmail: publicProcedure
+    .input(z.object({ token: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const { token } = input;
+
+      try {
+        const payload = verifyJwt(token);
+        console.log('Decoded JWT payload:', payload);
+        const user = await prisma.user.findUnique({
+          where: { id: payload.id },
+        });
+
+        if (!user) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'User not found',
+          });
+        }
+        if (user.status === 'SUSPENDED') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'This account is suspended. Please contact support.',
+          });
+        }
+
+        await prisma.user.update({
+          where: { id: payload.id },
+          data: { status: 'VERIFIED' },
+        });
+        const logintoken = signJwt({
+          id: user.id,
+          username: user.fullName,
+          role: 'user',
+        });
+
+        ctx.res.cookie('token', logintoken, {
+          httpOnly: true,
+          secure: config.env === 'production',
+          sameSite: 'strict',
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+        });
+
+        return { success: true };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Invalid or expired verification token',
+        });
+      }
     }),
 });

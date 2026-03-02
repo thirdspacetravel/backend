@@ -75,6 +75,9 @@ userOAuthRouter.post('/auth/google', async (req: Request, res: Response) => {
         },
       });
     }
+    if (user.status === AccountStatus.SUSPENDED) {
+      return res.status(403).json({ message: 'Your account has been Suspended.' });
+    }
     const token = signJwt({
       id: user.id,
       username: user.fullName,

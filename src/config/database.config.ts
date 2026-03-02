@@ -25,11 +25,8 @@ const prismaClientFactory = () => {
   });
 };
 
-export const prisma = global.prisma || prismaClientFactory();
-
-if (config.env !== 'production') {
-  global.prisma = prisma;
-}
+export const prisma = global.prisma ?? prismaClientFactory();
+global.prisma = prisma;
 
 const handleShutdown = async (signal: string) => {
   console.log(`\n${signal} received. Disconnecting Prisma...`);

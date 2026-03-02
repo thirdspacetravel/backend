@@ -2,12 +2,75 @@ import { TRPCError } from '@trpc/server';
 import { prisma } from '../../config/database.config.js';
 import { router, adminProcedure, publicProcedure } from '../trpc.js';
 import z from 'zod';
-import { TripCategory, TripStatus, type Prisma } from '../../generated/prisma/browser.js';
+import {
+  EnquiryStatus,
+  TripCategory,
+  TripStatus,
+  type Prisma,
+} from '../../generated/prisma/browser.js';
 import { config } from '../../config/env.config.js';
 import { signJwt } from '../../utils/jwt.js';
-import { comparePassword } from '../../utils/password.js';
+import { comparePassword, hashPassword } from '../../utils/password.js';
 import type { DayData } from '../../types/admin.trpc.js';
+import { sendEmail } from '../../utils/mailer.js';
 const LIMIT = 10;
+
+function makeMail(updatedEnquiry: any, input: any) {
+  let subject = '';
+  let htmlContent = '';
+
+  if (updatedEnquiry.type === 'CONTACT') {
+    // --- CONTACT / QUERY ---
+    subject = `Re: Regarding your query - ${updatedEnquiry.subject || 'Enquiry'}`;
+    htmlContent = `
+            <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+              <h2>Hello ${updatedEnquiry.fullName},</h2>
+              <p>Thank you for reaching out to us. We have reviewed your query and here is our response:</p>
+              <div style="background: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <strong>Our Response:</strong>
+                <p style="white-space: pre-wrap; margin-top: 10px;">${input.reply}</p>
+              </div>
+              <p>If you have any further questions, feel free to reply to this email.</p>
+              <br />
+              <p>Best Regards,<br /><strong>Third Space Travel</strong></p>
+            </div>
+          `;
+  } else if (updatedEnquiry.type === 'REQUEST' && input.status === 'ACCEPTED') {
+    subject = `Update regarding your request for ${updatedEnquiry.destination || 'your trip'}`;
+    htmlContent = `
+            <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+              <h2>Hello ${updatedEnquiry.fullName},</h2>
+              <p>We are pleased to inform you that we are moving forward with your request for <strong>${updatedEnquiry.destination || 'your destination'}</strong>.</p>
+              <div style="background: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <strong>Next Steps & Details:</strong>
+                <p style="white-space: pre-wrap; margin-top: 10px;">${input.reply}</p>
+              </div>
+              <p>We look forward to helping you plan a memorable journey.</p>
+              <br />
+              <p>Best Regards,<br /><strong>Third Space Travel</strong></p>
+            </div>
+          `;
+  } else {
+    // --- REQUEST REJECTED (REJECTED or others) ---
+    subject = `Regarding your request for ${updatedEnquiry.destination || 'your trip'}`;
+    htmlContent = `
+            <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+              <h2>Hello ${updatedEnquiry.fullName},</h2>
+              <p>Thank you for your interest in our services for your upcoming trip to <strong>${updatedEnquiry.destination || 'your destination'}</strong>.</p>
+              <p>After reviewing the details, we are unfortunately unable to accommodate your specific request at this time.</p>
+              <div style="background: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <strong>Note from our team:</strong>
+                <p style="white-space: pre-wrap; margin-top: 10px;">${input.reply}</p>
+              </div>
+              <p>We appreciate your understanding and hope to have the opportunity to serve you in the future.</p>
+              <br />
+              <p>Best Regards,<br /><strong>Third Space Travel</strong></p>
+            </div>
+          `;
+  }
+  return { subject, htmlContent };
+}
+
 export const adminRouter = router({
   login: publicProcedure
     .input(z.object({ username: z.string(), password: z.string() }))
@@ -74,6 +137,44 @@ export const adminRouter = router({
 
     return admin;
   }),
+  updateProfile: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        firstName: z.string(),
+        lastName: z.string(),
+        username: z.string(),
+        password: z.string().min(6).optional().or(z.literal('')),
+        avatarUrl: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { id, password, ...dataToUpdate } = input;
+      const updateData: any = { ...dataToUpdate };
+
+      if (password && password.length > 0) {
+        if (password.length < 6) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Password must be at least 6 characters long',
+          });
+        }
+        updateData.passwordHash = await hashPassword(password);
+      }
+      try {
+        const updatedAdmin = await prisma.adminUser.update({
+          where: { id },
+          data: updateData,
+        });
+        const { passwordHash: _, ...result } = updatedAdmin;
+        return result;
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update admin profile',
+        });
+      }
+    }),
   createDraftTrip: adminProcedure.mutation(async ({ ctx }) => {
     const trip = await prisma.trip.create({
       data: {
@@ -105,21 +206,93 @@ export const adminRouter = router({
         orderBy: {
           tripNo: 'desc',
         },
+        include: {
+          _count: {
+            select: {
+              bookings: {
+                where: {
+                  resultStatus: 'TXN_SUCCESS',
+                },
+              },
+            },
+          },
+        },
       });
 
       return trips.map(trip => {
-        const { createdAt, updatedAt, ...tripWithoutSensitiveData } = trip;
+        const { createdAt, updatedAt, _count, ...tripWithoutSensitiveData } = trip;
         return {
           ...tripWithoutSensitiveData,
           itinerary: trip.itinerary as unknown as DayData[],
           categories: trip.categories as unknown as string[],
           images: trip.images as unknown as string[],
+          bookedSeats: _count.bookings,
         };
       });
     }),
 
   getTripsCount: adminProcedure.query(async () => {
     const count = await prisma.trip.count();
+    return {
+      total: count,
+      totalPages: Math.ceil(count / LIMIT),
+    };
+  }),
+  fetchUsers: adminProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+      }),
+    )
+    .query(async ({ input }) => {
+      const skip = (input.page - 1) * LIMIT;
+
+      const users = await prisma.user.findMany({
+        take: LIMIT,
+        skip: skip,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          // Gets the total count of all bookings (Pending, Success, Failure)
+          _count: {
+            select: {
+              bookings: {
+                where: {
+                  resultStatus: 'TXN_SUCCESS',
+                },
+              },
+            },
+          },
+          // Gets only successful bookings to calculate the total spend
+          bookings: {
+            where: {
+              resultStatus: 'TXN_SUCCESS',
+            },
+            select: {
+              amount: true,
+            },
+          },
+        },
+      });
+
+      return users.map(user => {
+        const { updatedAt, passwordHash, bookings, _count, ...userWithoutSensitiveData } = user;
+
+        const totalSpent = bookings.reduce((acc, curr) => {
+          return acc + Number(curr.amount);
+        }, 0);
+
+        return {
+          ...userWithoutSensitiveData,
+          bookings: _count.bookings,
+          totalSpent: totalSpent,
+        };
+      });
+    }),
+
+  getUsersCount: adminProcedure.query(async () => {
+    const count = await prisma.user.count();
     return {
       total: count,
       totalPages: Math.ceil(count / LIMIT),
@@ -140,6 +313,33 @@ export const adminRouter = router({
       images: trip.images as unknown as string[],
     };
   }),
+  deleteUser: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      // Perform the suspension
+      const deletedUser = await prisma.user.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: 'SUSPENDED',
+        },
+      });
+      if (!deletedUser) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User not found or already suspended.',
+        });
+      }
+      return {
+        success: true,
+        message: `User ${deletedUser.fullName} has been suspended.`,
+      };
+    }),
   updateTrip: adminProcedure
     .input(
       z.object({
@@ -203,12 +403,30 @@ export const adminRouter = router({
           featuredCategories: input.featuredCategories,
         },
       });
+      if (!updatedTrip) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Trip with ID ${input.id} not found`,
+        });
+      }
+      if (updatedTrip.status === 'CANCELLED') {
+        await prisma.booking.updateMany({
+          where: {
+            tripid: updatedTrip.id,
+            resultStatus: 'TXN_SUCCESS',
+          },
+          data: {
+            resultStatus: 'TXN_CANCELLED',
+          },
+        });
+      }
       return { success: true };
     }),
+
   deleteTrip: adminProcedure
     .input(
       z.object({
-        id: z.string(), // or z.number() depending on your DB schema
+        id: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -242,5 +460,176 @@ export const adminRouter = router({
           cause: error,
         });
       }
+    }),
+  fetchBookings: adminProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+      }),
+    )
+    .query(async ({ input }) => {
+      const skip = (input.page - 1) * LIMIT;
+
+      const bookings = await prisma.booking.findMany({
+        take: LIMIT,
+        skip: skip,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          user: true,
+          trip: true,
+        },
+      });
+
+      return bookings.map(booking => {
+        const { updatedAt, ...bookingWithoutTimestamps } = booking;
+        return {
+          ...bookingWithoutTimestamps,
+          user: {
+            id: booking.user.id,
+            fullName: booking.user.fullName,
+            email: booking.user.email,
+            avatarUrl: booking.user.avatarUrl,
+          },
+          trip: {
+            id: booking.trip.id,
+            tripName: booking.trip.tripName,
+            destination: booking.trip.destination,
+          },
+        };
+      });
+    }),
+  getBookingsCount: adminProcedure.query(async () => {
+    const count = await prisma.booking.count();
+    return {
+      total: count,
+      totalPages: Math.ceil(count / LIMIT),
+    };
+  }),
+  markAsRefunded: adminProcedure
+    .input(
+      z.object({
+        bookingId: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { bookingId } = input;
+      const updatedBooking = await prisma.booking.update({
+        where: { id: bookingId },
+        data: { refunded: true },
+      });
+
+      if (!updatedBooking) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Booking with ID ${bookingId} not found`,
+        });
+      }
+
+      return { success: true };
+    }),
+  fetchEnquiries: adminProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+      }),
+    )
+    .query(async ({ input }) => {
+      const skip = (input.page - 1) * LIMIT;
+
+      const enquiries = await prisma.enquiry.findMany({
+        take: LIMIT,
+        skip: skip,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      });
+      return enquiries;
+    }),
+  fetchEnquiriesById: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const { id } = input;
+      const enquiry = await prisma.enquiry.findUnique({
+        where: { id },
+      });
+
+      if (!enquiry) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Enquiry with ID ${id} not found`,
+        });
+      }
+      if (enquiry.status === 'NEW') {
+        await prisma.enquiry.update({
+          where: { id },
+          data: { status: 'PENDING' },
+        });
+      }
+      return enquiry;
+    }),
+  updateEnquiryStatus: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        status: z.enum(EnquiryStatus),
+        reply: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const updatedEnquiry = await prisma.enquiry.update({
+          where: { id: input.id },
+          data: { status: input.status, reply: input.reply },
+        });
+        const { subject, htmlContent } = makeMail(updatedEnquiry, input);
+        sendEmail({
+          to: updatedEnquiry.email,
+          subject: subject,
+          text: input.reply,
+          html: htmlContent,
+        }).catch(err => console.error('Email delivery failed:', err));
+
+        return updatedEnquiry;
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update enquiry status',
+        });
+      }
+    }),
+  getEnquiriesCount: adminProcedure.query(async () => {
+    const count = await prisma.enquiry.count();
+    return {
+      total: count,
+      totalPages: Math.ceil(count / LIMIT),
+    };
+  }),
+
+  // 3. Delete an enquiry by enquiryNo
+  deleteEnquiry: adminProcedure
+    .input(
+      z.object({
+        enquiryNo: z.number(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      await prisma.enquiry.delete({
+        where: {
+          enquiryNo: input.enquiryNo,
+        },
+      });
+      return { success: true };
     }),
 });

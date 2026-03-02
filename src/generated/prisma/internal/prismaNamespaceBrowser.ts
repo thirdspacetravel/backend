@@ -52,7 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   AdminUser: 'AdminUser',
-  Customer: 'Customer',
+  Booking: 'Booking',
+  Enquiry: 'Enquiry',
   Trip: 'Trip',
   User: 'User'
 } as const
@@ -92,33 +93,55 @@ export const AdminUserScalarFieldEnum = {
 export type AdminUserScalarFieldEnum = (typeof AdminUserScalarFieldEnum)[keyof typeof AdminUserScalarFieldEnum]
 
 
-export const CustomerScalarFieldEnum = {
+export const BookingScalarFieldEnum = {
+  bookingno: 'bookingno',
   id: 'id',
+  userid: 'userid',
+  tripid: 'tripid',
+  roomtype: 'roomtype',
+  adults: 'adults',
+  amount: 'amount',
+  resultStatus: 'resultStatus',
+  txnId: 'txnId',
+  bankTxnId: 'bankTxnId',
+  txnAmount: 'txnAmount',
+  txnType: 'txnType',
+  gatewayName: 'gatewayName',
+  bankName: 'bankName',
+  paymentMode: 'paymentMode',
+  refundAmt: 'refundAmt',
+  txnDate: 'txnDate',
+  refunded: 'refunded',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  fullName: 'fullName',
-  avatarUrl: 'avatarUrl',
-  dob: 'dob',
-  gender: 'gender',
-  nationality: 'nationality',
-  maritalStatus: 'maritalStatus',
-  anniversaryDate: 'anniversaryDate',
-  email: 'email',
-  altEmail: 'altEmail',
-  primaryPhone: 'primaryPhone',
-  secondaryPhone: 'secondaryPhone',
-  preferredContact: 'preferredContact',
-  streetAddress: 'streetAddress',
-  city: 'city',
-  state: 'state',
-  zipCode: 'zipCode',
-  country: 'country',
-  passwordHash: 'passwordHash',
-  tripUpdates: 'tripUpdates',
-  promotionalEmails: 'promotionalEmails'
+  updatedAt: 'updatedAt'
 } as const
 
-export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const EnquiryScalarFieldEnum = {
+  enquiryNo: 'enquiryNo',
+  id: 'id',
+  fullName: 'fullName',
+  institutionName: 'institutionName',
+  designation: 'designation',
+  email: 'email',
+  phoneNumber: 'phoneNumber',
+  destination: 'destination',
+  reply: 'reply',
+  groupSize: 'groupSize',
+  travelDates: 'travelDates',
+  subject: 'subject',
+  message: 'message',
+  source: 'source',
+  status: 'status',
+  type: 'type',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type EnquiryScalarFieldEnum = (typeof EnquiryScalarFieldEnum)[keyof typeof EnquiryScalarFieldEnum]
 
 
 export const TripScalarFieldEnum = {
@@ -170,6 +193,7 @@ export const UserScalarFieldEnum = {
   phoneNumber: 'phoneNumber',
   altPhoneNumber: 'altPhoneNumber',
   preferredContact: 'preferredContact',
+  upiId: 'upiId',
   streetAddress: 'streetAddress',
   city: 'city',
   state: 'state',
@@ -220,24 +244,43 @@ export const NullsOrder = {
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
-export const CustomerOrderByRelevanceFieldEnum = {
+export const BookingOrderByRelevanceFieldEnum = {
   id: 'id',
-  fullName: 'fullName',
-  avatarUrl: 'avatarUrl',
-  nationality: 'nationality',
-  email: 'email',
-  altEmail: 'altEmail',
-  primaryPhone: 'primaryPhone',
-  secondaryPhone: 'secondaryPhone',
-  streetAddress: 'streetAddress',
-  city: 'city',
-  state: 'state',
-  zipCode: 'zipCode',
-  country: 'country',
-  passwordHash: 'passwordHash'
+  userid: 'userid',
+  tripid: 'tripid',
+  roomtype: 'roomtype',
+  txnId: 'txnId',
+  bankTxnId: 'bankTxnId',
+  txnAmount: 'txnAmount',
+  txnType: 'txnType',
+  gatewayName: 'gatewayName',
+  bankName: 'bankName',
+  paymentMode: 'paymentMode',
+  refundAmt: 'refundAmt',
+  txnDate: 'txnDate'
 } as const
 
-export type CustomerOrderByRelevanceFieldEnum = (typeof CustomerOrderByRelevanceFieldEnum)[keyof typeof CustomerOrderByRelevanceFieldEnum]
+export type BookingOrderByRelevanceFieldEnum = (typeof BookingOrderByRelevanceFieldEnum)[keyof typeof BookingOrderByRelevanceFieldEnum]
+
+
+export const EnquiryOrderByRelevanceFieldEnum = {
+  id: 'id',
+  fullName: 'fullName',
+  institutionName: 'institutionName',
+  designation: 'designation',
+  email: 'email',
+  phoneNumber: 'phoneNumber',
+  destination: 'destination',
+  reply: 'reply',
+  groupSize: 'groupSize',
+  travelDates: 'travelDates',
+  subject: 'subject',
+  message: 'message',
+  source: 'source',
+  userId: 'userId'
+} as const
+
+export type EnquiryOrderByRelevanceFieldEnum = (typeof EnquiryOrderByRelevanceFieldEnum)[keyof typeof EnquiryOrderByRelevanceFieldEnum]
 
 
 export const JsonNullValueFilter = {
@@ -281,6 +324,7 @@ export const UserOrderByRelevanceFieldEnum = {
   avatarUrl: 'avatarUrl',
   phoneNumber: 'phoneNumber',
   altPhoneNumber: 'altPhoneNumber',
+  upiId: 'upiId',
   streetAddress: 'streetAddress',
   city: 'city',
   state: 'state',

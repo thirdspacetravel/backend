@@ -40,6 +40,7 @@ export type UserMinAggregateOutputType = {
   phoneNumber: string | null
   altPhoneNumber: string | null
   preferredContact: $Enums.ContactMethod | null
+  upiId: string | null
   streetAddress: string | null
   city: string | null
   state: string | null
@@ -67,6 +68,7 @@ export type UserMaxAggregateOutputType = {
   phoneNumber: string | null
   altPhoneNumber: string | null
   preferredContact: $Enums.ContactMethod | null
+  upiId: string | null
   streetAddress: string | null
   city: string | null
   state: string | null
@@ -94,6 +96,7 @@ export type UserCountAggregateOutputType = {
   phoneNumber: number
   altPhoneNumber: number
   preferredContact: number
+  upiId: number
   streetAddress: number
   city: number
   state: number
@@ -123,6 +126,7 @@ export type UserMinAggregateInputType = {
   phoneNumber?: true
   altPhoneNumber?: true
   preferredContact?: true
+  upiId?: true
   streetAddress?: true
   city?: true
   state?: true
@@ -150,6 +154,7 @@ export type UserMaxAggregateInputType = {
   phoneNumber?: true
   altPhoneNumber?: true
   preferredContact?: true
+  upiId?: true
   streetAddress?: true
   city?: true
   state?: true
@@ -177,6 +182,7 @@ export type UserCountAggregateInputType = {
   phoneNumber?: true
   altPhoneNumber?: true
   preferredContact?: true
+  upiId?: true
   streetAddress?: true
   city?: true
   state?: true
@@ -277,6 +283,7 @@ export type UserGroupByOutputType = {
   phoneNumber: string | null
   altPhoneNumber: string | null
   preferredContact: $Enums.ContactMethod
+  upiId: string | null
   streetAddress: string | null
   city: string | null
   state: string | null
@@ -325,6 +332,7 @@ export type UserWhereInput = {
   phoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   altPhoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   preferredContact?: Prisma.EnumContactMethodFilter<"User"> | $Enums.ContactMethod
+  upiId?: Prisma.StringNullableFilter<"User"> | string | null
   streetAddress?: Prisma.StringNullableFilter<"User"> | string | null
   city?: Prisma.StringNullableFilter<"User"> | string | null
   state?: Prisma.StringNullableFilter<"User"> | string | null
@@ -334,6 +342,8 @@ export type UserWhereInput = {
   receivePromoEmails?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  bookings?: Prisma.BookingListRelationFilter
+  enquiries?: Prisma.EnquiryListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -352,6 +362,7 @@ export type UserOrderByWithRelationInput = {
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   altPhoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   preferredContact?: Prisma.SortOrder
+  upiId?: Prisma.SortOrderInput | Prisma.SortOrder
   streetAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
   state?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -361,6 +372,8 @@ export type UserOrderByWithRelationInput = {
   receivePromoEmails?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  bookings?: Prisma.BookingOrderByRelationAggregateInput
+  enquiries?: Prisma.EnquiryOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
 
@@ -383,6 +396,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   phoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   altPhoneNumber?: Prisma.StringNullableFilter<"User"> | string | null
   preferredContact?: Prisma.EnumContactMethodFilter<"User"> | $Enums.ContactMethod
+  upiId?: Prisma.StringNullableFilter<"User"> | string | null
   streetAddress?: Prisma.StringNullableFilter<"User"> | string | null
   city?: Prisma.StringNullableFilter<"User"> | string | null
   state?: Prisma.StringNullableFilter<"User"> | string | null
@@ -392,6 +406,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   receivePromoEmails?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  bookings?: Prisma.BookingListRelationFilter
+  enquiries?: Prisma.EnquiryListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -410,6 +426,7 @@ export type UserOrderByWithAggregationInput = {
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   altPhoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   preferredContact?: Prisma.SortOrder
+  upiId?: Prisma.SortOrderInput | Prisma.SortOrder
   streetAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
   state?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -443,6 +460,7 @@ export type UserScalarWhereWithAggregatesInput = {
   phoneNumber?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   altPhoneNumber?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   preferredContact?: Prisma.EnumContactMethodWithAggregatesFilter<"User"> | $Enums.ContactMethod
+  upiId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   streetAddress?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   city?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   state?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -470,6 +488,7 @@ export type UserCreateInput = {
   phoneNumber?: string | null
   altPhoneNumber?: string | null
   preferredContact?: $Enums.ContactMethod
+  upiId?: string | null
   streetAddress?: string | null
   city?: string | null
   state?: string | null
@@ -479,6 +498,8 @@ export type UserCreateInput = {
   receivePromoEmails?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -497,6 +518,7 @@ export type UserUncheckedCreateInput = {
   phoneNumber?: string | null
   altPhoneNumber?: string | null
   preferredContact?: $Enums.ContactMethod
+  upiId?: string | null
   streetAddress?: string | null
   city?: string | null
   state?: string | null
@@ -506,6 +528,8 @@ export type UserUncheckedCreateInput = {
   receivePromoEmails?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -524,6 +548,7 @@ export type UserUpdateInput = {
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   altPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preferredContact?: Prisma.EnumContactMethodFieldUpdateOperationsInput | $Enums.ContactMethod
+  upiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   streetAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -533,6 +558,8 @@ export type UserUpdateInput = {
   receivePromoEmails?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  enquiries?: Prisma.EnquiryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -551,6 +578,7 @@ export type UserUncheckedUpdateInput = {
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   altPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preferredContact?: Prisma.EnumContactMethodFieldUpdateOperationsInput | $Enums.ContactMethod
+  upiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   streetAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -560,6 +588,8 @@ export type UserUncheckedUpdateInput = {
   receivePromoEmails?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -578,6 +608,7 @@ export type UserCreateManyInput = {
   phoneNumber?: string | null
   altPhoneNumber?: string | null
   preferredContact?: $Enums.ContactMethod
+  upiId?: string | null
   streetAddress?: string | null
   city?: string | null
   state?: string | null
@@ -605,6 +636,7 @@ export type UserUpdateManyMutationInput = {
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   altPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preferredContact?: Prisma.EnumContactMethodFieldUpdateOperationsInput | $Enums.ContactMethod
+  upiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   streetAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -632,6 +664,7 @@ export type UserUncheckedUpdateManyInput = {
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   altPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preferredContact?: Prisma.EnumContactMethodFieldUpdateOperationsInput | $Enums.ContactMethod
+  upiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   streetAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -641,6 +674,16 @@ export type UserUncheckedUpdateManyInput = {
   receivePromoEmails?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
 }
 
 export type UserOrderByRelevanceInput = {
@@ -665,6 +708,7 @@ export type UserCountOrderByAggregateInput = {
   phoneNumber?: Prisma.SortOrder
   altPhoneNumber?: Prisma.SortOrder
   preferredContact?: Prisma.SortOrder
+  upiId?: Prisma.SortOrder
   streetAddress?: Prisma.SortOrder
   city?: Prisma.SortOrder
   state?: Prisma.SortOrder
@@ -692,6 +736,7 @@ export type UserMaxOrderByAggregateInput = {
   phoneNumber?: Prisma.SortOrder
   altPhoneNumber?: Prisma.SortOrder
   preferredContact?: Prisma.SortOrder
+  upiId?: Prisma.SortOrder
   streetAddress?: Prisma.SortOrder
   city?: Prisma.SortOrder
   state?: Prisma.SortOrder
@@ -719,6 +764,7 @@ export type UserMinOrderByAggregateInput = {
   phoneNumber?: Prisma.SortOrder
   altPhoneNumber?: Prisma.SortOrder
   preferredContact?: Prisma.SortOrder
+  upiId?: Prisma.SortOrder
   streetAddress?: Prisma.SortOrder
   city?: Prisma.SortOrder
   state?: Prisma.SortOrder
@@ -730,10 +776,354 @@ export type UserMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type UserCreateNestedOneWithoutBookingsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBookingsInput, Prisma.UserUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBookingsInput, Prisma.UserUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBookingsInput
+  upsert?: Prisma.UserUpsertWithoutBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBookingsInput, Prisma.UserUpdateWithoutBookingsInput>, Prisma.UserUncheckedUpdateWithoutBookingsInput>
+}
+
+export type UserCreateNestedOneWithoutEnquiriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEnquiriesInput, Prisma.UserUncheckedCreateWithoutEnquiriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEnquiriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutEnquiriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEnquiriesInput, Prisma.UserUncheckedCreateWithoutEnquiriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEnquiriesInput
+  upsert?: Prisma.UserUpsertWithoutEnquiriesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEnquiriesInput, Prisma.UserUpdateWithoutEnquiriesInput>, Prisma.UserUncheckedUpdateWithoutEnquiriesInput>
+}
+
 export type EnumAccountStatusFieldUpdateOperationsInput = {
   set?: $Enums.AccountStatus
 }
 
+export type NullableEnumGenderFieldUpdateOperationsInput = {
+  set?: $Enums.Gender | null
+}
+
+export type NullableEnumMaritalStatusFieldUpdateOperationsInput = {
+  set?: $Enums.MaritalStatus | null
+}
+
+export type EnumContactMethodFieldUpdateOperationsInput = {
+  set?: $Enums.ContactMethod
+}
+
+export type UserCreateWithoutBookingsInput = {
+  id?: string
+  email: string
+  alternateEmail?: string | null
+  passwordHash: string
+  status?: $Enums.AccountStatus
+  fullName: string
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  nationality?: string | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  anniversaryDate?: Date | string | null
+  avatarUrl?: string | null
+  phoneNumber?: string | null
+  altPhoneNumber?: string | null
+  preferredContact?: $Enums.ContactMethod
+  upiId?: string | null
+  streetAddress?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  zipCode?: string | null
+  receiveTripUpdates?: boolean
+  receivePromoEmails?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  enquiries?: Prisma.EnquiryCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutBookingsInput = {
+  id?: string
+  email: string
+  alternateEmail?: string | null
+  passwordHash: string
+  status?: $Enums.AccountStatus
+  fullName: string
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  nationality?: string | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  anniversaryDate?: Date | string | null
+  avatarUrl?: string | null
+  phoneNumber?: string | null
+  altPhoneNumber?: string | null
+  preferredContact?: $Enums.ContactMethod
+  upiId?: string | null
+  streetAddress?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  zipCode?: string | null
+  receiveTripUpdates?: boolean
+  receivePromoEmails?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  enquiries?: Prisma.EnquiryUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutBookingsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBookingsInput, Prisma.UserUncheckedCreateWithoutBookingsInput>
+}
+
+export type UserUpsertWithoutBookingsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBookingsInput, Prisma.UserUncheckedUpdateWithoutBookingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBookingsInput, Prisma.UserUncheckedCreateWithoutBookingsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBookingsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBookingsInput, Prisma.UserUncheckedUpdateWithoutBookingsInput>
+}
+
+export type UserUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  alternateEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  anniversaryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  altPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredContact?: Prisma.EnumContactMethodFieldUpdateOperationsInput | $Enums.ContactMethod
+  upiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  streetAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveTripUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receivePromoEmails?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  enquiries?: Prisma.EnquiryUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  alternateEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  anniversaryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  altPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredContact?: Prisma.EnumContactMethodFieldUpdateOperationsInput | $Enums.ContactMethod
+  upiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  streetAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveTripUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receivePromoEmails?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  enquiries?: Prisma.EnquiryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutEnquiriesInput = {
+  id?: string
+  email: string
+  alternateEmail?: string | null
+  passwordHash: string
+  status?: $Enums.AccountStatus
+  fullName: string
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  nationality?: string | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  anniversaryDate?: Date | string | null
+  avatarUrl?: string | null
+  phoneNumber?: string | null
+  altPhoneNumber?: string | null
+  preferredContact?: $Enums.ContactMethod
+  upiId?: string | null
+  streetAddress?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  zipCode?: string | null
+  receiveTripUpdates?: boolean
+  receivePromoEmails?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutEnquiriesInput = {
+  id?: string
+  email: string
+  alternateEmail?: string | null
+  passwordHash: string
+  status?: $Enums.AccountStatus
+  fullName: string
+  dateOfBirth?: Date | string | null
+  gender?: $Enums.Gender | null
+  nationality?: string | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  anniversaryDate?: Date | string | null
+  avatarUrl?: string | null
+  phoneNumber?: string | null
+  altPhoneNumber?: string | null
+  preferredContact?: $Enums.ContactMethod
+  upiId?: string | null
+  streetAddress?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  zipCode?: string | null
+  receiveTripUpdates?: boolean
+  receivePromoEmails?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutEnquiriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutEnquiriesInput, Prisma.UserUncheckedCreateWithoutEnquiriesInput>
+}
+
+export type UserUpsertWithoutEnquiriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutEnquiriesInput, Prisma.UserUncheckedUpdateWithoutEnquiriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutEnquiriesInput, Prisma.UserUncheckedCreateWithoutEnquiriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutEnquiriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutEnquiriesInput, Prisma.UserUncheckedUpdateWithoutEnquiriesInput>
+}
+
+export type UserUpdateWithoutEnquiriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  alternateEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  anniversaryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  altPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredContact?: Prisma.EnumContactMethodFieldUpdateOperationsInput | $Enums.ContactMethod
+  upiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  streetAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveTripUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receivePromoEmails?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutEnquiriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  alternateEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  anniversaryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  altPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredContact?: Prisma.EnumContactMethodFieldUpdateOperationsInput | $Enums.ContactMethod
+  upiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  streetAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveTripUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receivePromoEmails?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+}
+
+
+/**
+ * Count Type UserCountOutputType
+ */
+
+export type UserCountOutputType = {
+  bookings: number
+  enquiries: number
+}
+
+export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bookings?: boolean | UserCountOutputTypeCountBookingsArgs
+  enquiries?: boolean | UserCountOutputTypeCountEnquiriesArgs
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserCountOutputType
+   */
+  select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountEnquiriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EnquiryWhereInput
+}
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -752,6 +1142,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   phoneNumber?: boolean
   altPhoneNumber?: boolean
   preferredContact?: boolean
+  upiId?: boolean
   streetAddress?: boolean
   city?: boolean
   state?: boolean
@@ -761,6 +1152,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   receivePromoEmails?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  bookings?: boolean | Prisma.User$bookingsArgs<ExtArgs>
+  enquiries?: boolean | Prisma.User$enquiriesArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 
@@ -781,6 +1175,7 @@ export type UserSelectScalar = {
   phoneNumber?: boolean
   altPhoneNumber?: boolean
   preferredContact?: boolean
+  upiId?: boolean
   streetAddress?: boolean
   city?: boolean
   state?: boolean
@@ -792,11 +1187,19 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "alternateEmail" | "passwordHash" | "status" | "fullName" | "dateOfBirth" | "gender" | "nationality" | "maritalStatus" | "anniversaryDate" | "avatarUrl" | "phoneNumber" | "altPhoneNumber" | "preferredContact" | "streetAddress" | "city" | "state" | "country" | "zipCode" | "receiveTripUpdates" | "receivePromoEmails" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "alternateEmail" | "passwordHash" | "status" | "fullName" | "dateOfBirth" | "gender" | "nationality" | "maritalStatus" | "anniversaryDate" | "avatarUrl" | "phoneNumber" | "altPhoneNumber" | "preferredContact" | "upiId" | "streetAddress" | "city" | "state" | "country" | "zipCode" | "receiveTripUpdates" | "receivePromoEmails" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bookings?: boolean | Prisma.User$bookingsArgs<ExtArgs>
+  enquiries?: boolean | Prisma.User$enquiriesArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
+}
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
-  objects: {}
+  objects: {
+    bookings: Prisma.$BookingPayload<ExtArgs>[]
+    enquiries: Prisma.$EnquiryPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string
@@ -813,6 +1216,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     phoneNumber: string | null
     altPhoneNumber: string | null
     preferredContact: $Enums.ContactMethod
+    upiId: string | null
     streetAddress: string | null
     city: string | null
     state: string | null
@@ -1162,6 +1566,8 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  bookings<T extends Prisma.User$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  enquiries<T extends Prisma.User$enquiriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$enquiriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnquiryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1206,6 +1612,7 @@ export interface UserFieldRefs {
   readonly phoneNumber: Prisma.FieldRef<"User", 'String'>
   readonly altPhoneNumber: Prisma.FieldRef<"User", 'String'>
   readonly preferredContact: Prisma.FieldRef<"User", 'ContactMethod'>
+  readonly upiId: Prisma.FieldRef<"User", 'String'>
   readonly streetAddress: Prisma.FieldRef<"User", 'String'>
   readonly city: Prisma.FieldRef<"User", 'String'>
   readonly state: Prisma.FieldRef<"User", 'String'>
@@ -1232,6 +1639,10 @@ export type UserFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1250,6 +1661,10 @@ export type UserFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1267,6 +1682,10 @@ export type UserFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * Filter, which User to fetch.
    */
@@ -1316,6 +1735,10 @@ export type UserFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where?: Prisma.UserWhereInput
@@ -1364,6 +1787,10 @@ export type UserFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which Users to fetch.
    */
   where?: Prisma.UserWhereInput
@@ -1407,6 +1834,10 @@ export type UserCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * The data needed to create a User.
    */
   data: Prisma.XOR<Prisma.UserCreateInput, Prisma.UserUncheckedCreateInput>
@@ -1435,6 +1866,10 @@ export type UserUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * The data needed to update a User.
    */
@@ -1476,6 +1911,10 @@ export type UserUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * The filter to search for the User to update in case it exists.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1502,6 +1941,10 @@ export type UserDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter which User to delete.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1522,6 +1965,54 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * User.bookings
+ */
+export type User$bookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * User.enquiries
+ */
+export type User$enquiriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Enquiry
+   */
+  select?: Prisma.EnquirySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Enquiry
+   */
+  omit?: Prisma.EnquiryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EnquiryInclude<ExtArgs> | null
+  where?: Prisma.EnquiryWhereInput
+  orderBy?: Prisma.EnquiryOrderByWithRelationInput | Prisma.EnquiryOrderByWithRelationInput[]
+  cursor?: Prisma.EnquiryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EnquiryScalarFieldEnum | Prisma.EnquiryScalarFieldEnum[]
+}
+
+/**
  * User without action
  */
 export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1533,4 +2024,8 @@ export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
 }

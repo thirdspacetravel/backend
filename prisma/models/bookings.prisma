@@ -1,0 +1,35 @@
+model Booking {
+    bookingno Int     @id @default(autoincrement())
+    id        String  @unique @default(uuid())
+    userid    String
+    tripid    String
+    trip      Trip    @relation(fields: [tripid], references: [id])
+    user      User    @relation(fields: [userid], references: [id])
+    roomtype  String
+    adults    Int
+    amount    Decimal @db.Decimal(10, 2)
+
+    resultStatus TransactionStatus @default(TXN_PENDING)
+    txnId        String?           @unique
+    bankTxnId    String?
+    txnAmount    String?
+    txnType      String?
+    gatewayName  String?
+    bankName     String?
+    paymentMode  String?
+    refundAmt    String?
+    txnDate      String?
+    refunded     Boolean           @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("bookings")
+}
+
+enum TransactionStatus {
+    TXN_SUCCESS
+    TXN_PENDING
+    TXN_FAILURE
+    TXN_CANCELLED
+}

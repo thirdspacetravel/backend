@@ -408,6 +408,7 @@ export type TripWhereInput = {
   images?: Prisma.JsonFilter<"Trip">
   createdAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
+  bookings?: Prisma.BookingListRelationFilter
 }
 
 export type TripOrderByWithRelationInput = {
@@ -438,6 +439,7 @@ export type TripOrderByWithRelationInput = {
   images?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  bookings?: Prisma.BookingOrderByRelationAggregateInput
   _relevance?: Prisma.TripOrderByRelevanceInput
 }
 
@@ -472,6 +474,7 @@ export type TripWhereUniqueInput = Prisma.AtLeast<{
   images?: Prisma.JsonFilter<"Trip">
   createdAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
+  bookings?: Prisma.BookingListRelationFilter
 }, "tripNo" | "id">
 
 export type TripOrderByWithAggregationInput = {
@@ -569,6 +572,7 @@ export type TripCreateInput = {
   images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookings?: Prisma.BookingCreateNestedManyWithoutTripInput
 }
 
 export type TripUncheckedCreateInput = {
@@ -599,6 +603,7 @@ export type TripUncheckedCreateInput = {
   images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTripInput
 }
 
 export type TripUpdateInput = {
@@ -628,6 +633,7 @@ export type TripUpdateInput = {
   images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUpdateManyWithoutTripNestedInput
 }
 
 export type TripUncheckedUpdateInput = {
@@ -658,6 +664,7 @@ export type TripUncheckedUpdateInput = {
   images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTripNestedInput
 }
 
 export type TripCreateManyInput = {
@@ -747,6 +754,11 @@ export type TripUncheckedUpdateManyInput = {
   images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TripScalarRelationFilter = {
+  is?: Prisma.TripWhereInput
+  isNot?: Prisma.TripWhereInput
 }
 
 export type TripOrderByRelevanceInput = {
@@ -861,6 +873,20 @@ export type TripSumOrderByAggregateInput = {
   priceDouble?: Prisma.SortOrder
 }
 
+export type TripCreateNestedOneWithoutBookingsInput = {
+  create?: Prisma.XOR<Prisma.TripCreateWithoutBookingsInput, Prisma.TripUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.TripCreateOrConnectWithoutBookingsInput
+  connect?: Prisma.TripWhereUniqueInput
+}
+
+export type TripUpdateOneRequiredWithoutBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.TripCreateWithoutBookingsInput, Prisma.TripUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.TripCreateOrConnectWithoutBookingsInput
+  upsert?: Prisma.TripUpsertWithoutBookingsInput
+  connect?: Prisma.TripWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TripUpdateToOneWithWhereWithoutBookingsInput, Prisma.TripUpdateWithoutBookingsInput>, Prisma.TripUncheckedUpdateWithoutBookingsInput>
+}
+
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -877,14 +903,173 @@ export type NullableEnumTripCategoryFieldUpdateOperationsInput = {
   set?: $Enums.TripCategory | null
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
+export type TripCreateWithoutBookingsInput = {
+  id?: string
+  tripName?: string
+  destination?: string
+  tripType?: number | null
+  fullOverview?: string
+  days?: number | null
+  nights?: number | null
+  totalSeats?: number | null
+  pickupLocation?: string
+  dropOffLocation?: string
+  inclusions?: string
+  exclusions?: string
+  itinerary: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.TripStatus
+  isFeatured?: boolean
+  isAcceptingBookings?: boolean
+  categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: $Enums.TripCategory | null
+  priceQuad?: number | null
+  priceTriple?: number | null
+  priceDouble?: number | null
+  startDateTime?: Date | string | null
+  endDateTime?: Date | string | null
+  images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TripUncheckedCreateWithoutBookingsInput = {
+  tripNo?: number
+  id?: string
+  tripName?: string
+  destination?: string
+  tripType?: number | null
+  fullOverview?: string
+  days?: number | null
+  nights?: number | null
+  totalSeats?: number | null
+  pickupLocation?: string
+  dropOffLocation?: string
+  inclusions?: string
+  exclusions?: string
+  itinerary: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.TripStatus
+  isFeatured?: boolean
+  isAcceptingBookings?: boolean
+  categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: $Enums.TripCategory | null
+  priceQuad?: number | null
+  priceTriple?: number | null
+  priceDouble?: number | null
+  startDateTime?: Date | string | null
+  endDateTime?: Date | string | null
+  images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TripCreateOrConnectWithoutBookingsInput = {
+  where: Prisma.TripWhereUniqueInput
+  create: Prisma.XOR<Prisma.TripCreateWithoutBookingsInput, Prisma.TripUncheckedCreateWithoutBookingsInput>
+}
+
+export type TripUpsertWithoutBookingsInput = {
+  update: Prisma.XOR<Prisma.TripUpdateWithoutBookingsInput, Prisma.TripUncheckedUpdateWithoutBookingsInput>
+  create: Prisma.XOR<Prisma.TripCreateWithoutBookingsInput, Prisma.TripUncheckedCreateWithoutBookingsInput>
+  where?: Prisma.TripWhereInput
+}
+
+export type TripUpdateToOneWithWhereWithoutBookingsInput = {
+  where?: Prisma.TripWhereInput
+  data: Prisma.XOR<Prisma.TripUpdateWithoutBookingsInput, Prisma.TripUncheckedUpdateWithoutBookingsInput>
+}
+
+export type TripUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tripName?: Prisma.StringFieldUpdateOperationsInput | string
+  destination?: Prisma.StringFieldUpdateOperationsInput | string
+  tripType?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fullOverview?: Prisma.StringFieldUpdateOperationsInput | string
+  days?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nights?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalSeats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pickupLocation?: Prisma.StringFieldUpdateOperationsInput | string
+  dropOffLocation?: Prisma.StringFieldUpdateOperationsInput | string
+  inclusions?: Prisma.StringFieldUpdateOperationsInput | string
+  exclusions?: Prisma.StringFieldUpdateOperationsInput | string
+  itinerary?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumTripStatusFieldUpdateOperationsInput | $Enums.TripStatus
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAcceptingBookings?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: Prisma.NullableEnumTripCategoryFieldUpdateOperationsInput | $Enums.TripCategory | null
+  priceQuad?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceTriple?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceDouble?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDateTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDateTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TripUncheckedUpdateWithoutBookingsInput = {
+  tripNo?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tripName?: Prisma.StringFieldUpdateOperationsInput | string
+  destination?: Prisma.StringFieldUpdateOperationsInput | string
+  tripType?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fullOverview?: Prisma.StringFieldUpdateOperationsInput | string
+  days?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nights?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  totalSeats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pickupLocation?: Prisma.StringFieldUpdateOperationsInput | string
+  dropOffLocation?: Prisma.StringFieldUpdateOperationsInput | string
+  inclusions?: Prisma.StringFieldUpdateOperationsInput | string
+  exclusions?: Prisma.StringFieldUpdateOperationsInput | string
+  itinerary?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumTripStatusFieldUpdateOperationsInput | $Enums.TripStatus
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAcceptingBookings?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  categories?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  featuredCategories?: Prisma.NullableEnumTripCategoryFieldUpdateOperationsInput | $Enums.TripCategory | null
+  priceQuad?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceTriple?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceDouble?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDateTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDateTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  images?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type TripCountOutputType
+ */
+
+export type TripCountOutputType = {
+  bookings: number
+}
+
+export type TripCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bookings?: boolean | TripCountOutputTypeCountBookingsArgs
+}
+
+/**
+ * TripCountOutputType without action
+ */
+export type TripCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TripCountOutputType
+   */
+  select?: Prisma.TripCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * TripCountOutputType without action
+ */
+export type TripCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
 
 
 export type TripSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -915,6 +1100,8 @@ export type TripSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   images?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  bookings?: boolean | Prisma.Trip$bookingsArgs<ExtArgs>
+  _count?: boolean | Prisma.TripCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["trip"]>
 
 
@@ -950,10 +1137,16 @@ export type TripSelectScalar = {
 }
 
 export type TripOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"tripNo" | "id" | "tripName" | "destination" | "tripType" | "fullOverview" | "days" | "nights" | "totalSeats" | "pickupLocation" | "dropOffLocation" | "inclusions" | "exclusions" | "itinerary" | "status" | "isFeatured" | "isAcceptingBookings" | "categories" | "featuredCategories" | "priceQuad" | "priceTriple" | "priceDouble" | "startDateTime" | "endDateTime" | "images" | "createdAt" | "updatedAt", ExtArgs["result"]["trip"]>
+export type TripInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bookings?: boolean | Prisma.Trip$bookingsArgs<ExtArgs>
+  _count?: boolean | Prisma.TripCountOutputTypeDefaultArgs<ExtArgs>
+}
 
 export type $TripPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Trip"
-  objects: {}
+  objects: {
+    bookings: Prisma.$BookingPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     tripNo: number
     id: string
@@ -1322,6 +1515,7 @@ readonly fields: TripFieldRefs;
  */
 export interface Prisma__TripClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  bookings<T extends Prisma.Trip$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Trip$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1395,6 +1589,10 @@ export type TripFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
+  /**
    * Filter, which Trip to fetch.
    */
   where: Prisma.TripWhereUniqueInput
@@ -1413,6 +1611,10 @@ export type TripFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
+  /**
    * Filter, which Trip to fetch.
    */
   where: Prisma.TripWhereUniqueInput
@@ -1430,6 +1632,10 @@ export type TripFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Trip
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
   /**
    * Filter, which Trip to fetch.
    */
@@ -1479,6 +1685,10 @@ export type TripFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
+  /**
    * Filter, which Trip to fetch.
    */
   where?: Prisma.TripWhereInput
@@ -1527,6 +1737,10 @@ export type TripFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
+  /**
    * Filter, which Trips to fetch.
    */
   where?: Prisma.TripWhereInput
@@ -1570,6 +1784,10 @@ export type TripCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
+  /**
    * The data needed to create a Trip.
    */
   data: Prisma.XOR<Prisma.TripCreateInput, Prisma.TripUncheckedCreateInput>
@@ -1598,6 +1816,10 @@ export type TripUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the Trip
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
   /**
    * The data needed to update a Trip.
    */
@@ -1639,6 +1861,10 @@ export type TripUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
+  /**
    * The filter to search for the Trip to update in case it exists.
    */
   where: Prisma.TripWhereUniqueInput
@@ -1665,6 +1891,10 @@ export type TripDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
+  /**
    * Filter which Trip to delete.
    */
   where: Prisma.TripWhereUniqueInput
@@ -1685,6 +1915,30 @@ export type TripDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * Trip.bookings
+ */
+export type Trip$bookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
  * Trip without action
  */
 export type TripDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1696,4 +1950,8 @@ export type TripDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the Trip
    */
   omit?: Prisma.TripOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TripInclude<ExtArgs> | null
 }

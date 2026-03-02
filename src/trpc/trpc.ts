@@ -1,18 +1,36 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context.js';
-
+import { prisma } from '../config/database.config.js';
 const t = initTRPC.context<Context>().create();
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
-export const protectedProcedure = publicProcedure.use(({ ctx, next }) => {
-  if (!ctx.user) {
+export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
+  if (!ctx.user || ctx.user.role !== 'user') {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+  const dbUser = await prisma.user.findUnique({
+    where: { id: ctx.user.id },
+    select: { id: true, status: true, fullName: true, email: true, avatarUrl: true },
+  });
+  if (!dbUser) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (dbUser.status === 'SUSPENDED') {
+    if (ctx.res) {
+      ctx.res.clearCookie('token');
+    }
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Account suspended. You have been logged out.',
+    });
   }
   return next({
     ctx: {
       user: ctx.user,
+      dbUser,
     },
   });
 });

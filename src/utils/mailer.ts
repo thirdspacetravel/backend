@@ -37,7 +37,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async ({ to, subject, text, html }: EmailOptions) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Your App Name" <${config.emailUser}>`,
+      from: `"Third Space Travel" <${config.emailUser}>`,
       to,
       subject,
       text,

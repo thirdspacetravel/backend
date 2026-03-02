@@ -11,6 +11,12 @@ export const signJwt = (payload: JWTPayload): string => {
   });
 };
 
+export const signVerificationJwt = (payload: { id: string }): string => {
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: '24h',
+  });
+};
+
 export const verifyJwt = (token: string): JWTPayload => {
   return jwt.verify(token, JWT_SECRET) as JWTPayload;
 };

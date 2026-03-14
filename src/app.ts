@@ -13,6 +13,8 @@ import { errorHandler } from './middleware/errorHandler.middleware.js';
 import { notFoundHandler } from './middleware/notFoundHandler.middleware.js';
 import { apiRouter } from './api/index.js';
 import { UPLOAD_DIR } from './middleware/upload.middleware.js';
+import path from 'path';
+import { initCronJobs } from './utils/cronTasks.js';
 
 const app: Application = express();
 
@@ -57,10 +59,12 @@ app.use(
 app.use(apiRouter);
 
 // images
-app.use('/images', express.static(UPLOAD_DIR));
+app.use('/images', express.static(path.join(UPLOAD_DIR, 'persistent')));
+app.use('/images', express.static(path.join(UPLOAD_DIR, 'tmp')));
 
 // Error Handling
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+initCronJobs();
 export { app };

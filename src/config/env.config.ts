@@ -19,10 +19,9 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   FRONTEND_URL: z.string().default('http://localhost:3000'),
-  PAYTM_MID: z.string(),
-  PAYTM_MERCHANT_KEY: z.string(),
-  PAYTM_WEBSITE: z.string(),
-  PAYTM_CALLBACK_URL: z.string(),
+  PHONEPE_CID: z.string(),
+  PHONEPE_CLIENT_KEY: z.string(),
+  PHONEPE_CALLBACK_URL: z.string(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -45,10 +44,9 @@ const env = parsed.success
       GOOGLE_CLIENT_ID: '',
       GOOGLE_CLIENT_SECRET: '',
       FRONTEND_URL: '',
-      PAYTM_MID: '',
-      PAYTM_MERCHANT_KEY: '',
-      PAYTM_WEBSITE: '',
-      PAYTM_CALLBACK_URL: '',
+      PHONEPE_CID: '',
+      PHONEPE_CLIENT_KEY: '',
+      PHONEPE_CALLBACK_URL: '',
     };
 
 export const config = {
@@ -67,8 +65,7 @@ export const config = {
   googleClientId: env.GOOGLE_CLIENT_ID,
   googleClientSecret: env.GOOGLE_CLIENT_SECRET,
   frontendUrl: env.FRONTEND_URL,
-  paytmMid: env.PAYTM_MID,
-  paytmMerchantKey: env.PAYTM_MERCHANT_KEY,
-  paytmWebsite: env.PAYTM_WEBSITE,
-  paytmCallbackUrl: env.PAYTM_CALLBACK_URL,
+  phonepeCid: env.PHONEPE_CID,
+  phonepeClientKey: env.PHONEPE_CLIENT_KEY,
+  phonepeCallbackUrl: env.PHONEPE_CALLBACK_URL,
 } as const;

@@ -14,9 +14,8 @@ import {
 } from '../../generated/prisma/browser.js';
 import { sendEmail } from '../../utils/mailer.js';
 import { validateUserProfile } from '../../utils/validator.js';
-import type { PaytmParamsBody } from 'paytmchecksum';
-import { PaytmHelper } from '../../utils/paytmHelpher.js';
 import axios from 'axios';
+import { StorageManager } from '../../utils/StorageManager.js';
 
 type UserDataType = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'passwordHash'>;
 
@@ -51,7 +50,7 @@ export const userData = z
     nationality: z.string().trim().nullable().or(z.literal('')),
     maritalStatus: z.enum(MaritalStatus).nullable().or(z.literal('')),
     anniversaryDate: z.preprocess(arg => (arg === '' ? null : arg), z.coerce.date().nullable()),
-    avatarUrl: z.url().nullable().or(z.literal('')),
+    avatarUrl: z.string().nullable().or(z.literal('')),
     phoneNumber: z.string().trim().nullable().or(z.literal('')),
     altPhoneNumber: z.string().trim().nullable().or(z.literal('')),
     upiId: z.string().trim().nullable().or(z.literal('')),
@@ -193,17 +192,47 @@ export const userRouter = router({
   }),
   updateMe: protectedProcedure.input(userData).mutation(async ({ input, ctx }) => {
     const { email, ...inputWithoutEmail } = input;
+    const olduser = await prisma.user.findUnique({
+      where: { id: ctx.user.id },
+      select: { avatarUrl: true },
+    });
+    if (!olduser) {
+      throw new TRPCError({ message: 'User not found', code: 'NOT_FOUND' });
+    }
     const updatedUser = await prisma.user.update({
       where: { id: ctx.user.id },
       data: inputWithoutEmail as Omit<UserDataType, 'email'>,
     });
+    if (updatedUser.avatarUrl !== olduser.avatarUrl) {
+      if (olduser.avatarUrl) {
+        try {
+          await StorageManager.deletePersistentFile(olduser.avatarUrl);
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            console.error(`Failed to delete image ${olduser.avatarUrl}:`, err.message);
+          } else {
+            console.error(`An unexpected error occurred:`, err);
+          }
+        }
+      }
+      if (updatedUser.avatarUrl) {
+        try {
+          await StorageManager.persistFile(updatedUser.avatarUrl);
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            console.error(`Failed to move image ${updatedUser.avatarUrl}:`, err.message);
+          } else {
+            console.error(`An unexpected error occurred:`, err);
+          }
+        }
+      }
+    }
     return updatedUser;
   }),
   checkStatus: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.user || ctx.user.role !== 'user') {
       return { authenticated: false, user: null };
     }
-    // Single lightweight query — only fetch what the response needs
     const user = await prisma.user.findUnique({
       where: { id: ctx.user.id },
       select: { status: true, fullName: true, email: true, avatarUrl: true },
@@ -364,45 +393,11 @@ export const userRouter = router({
         });
       }
 
-      const paytmParamsBody: PaytmParamsBody = {
-        requestType: 'Payment',
-        mid: config.paytmMid,
-        websiteName: config.paytmWebsite,
-        orderId: booking.id,
-        callbackUrl: config.paytmCallbackUrl,
-        txnAmount: {
-          value: totalAmount.toFixed(2),
-          currency: 'INR',
-        },
-        userInfo: {
-          custId: user.id,
-        },
-      };
-      const checksum = await PaytmHelper.generateSignature(
-        paytmParamsBody,
-        config.paytmMerchantKey,
-      );
-
-      // 2. Make API Call to Paytm
-      const postData = {
-        head: { signature: checksum },
-        body: paytmParamsBody,
-      };
-
       try {
-        console.log('Sending to Paytm:', JSON.stringify(postData, null, 2));
-
-        const response = await axios.post(
-          `https://securestage.paytmpayments.com/theia/api/v1/initiateTransaction?mid=${config.paytmMid}&orderId=${booking.id}`,
-          postData,
-        );
-
-        console.log('Paytm Response:', response.data);
-
         return {
-          txnToken: response.data.body.txnToken as string,
+          txnToken: 'dfg' as string,
           orderId: booking.id,
-          mid: config.paytmMid,
+          mid: config.phonepeCid,
           amount: totalAmount.toFixed(2),
         };
       } catch (error) {

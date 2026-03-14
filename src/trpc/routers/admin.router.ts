@@ -13,6 +13,8 @@ import { signJwt } from '../../utils/jwt.js';
 import { comparePassword, hashPassword } from '../../utils/password.js';
 import type { DayData } from '../../types/admin.trpc.js';
 import { sendEmail } from '../../utils/mailer.js';
+import { StorageManager } from '../../utils/StorageManager.js';
+import { getDifference } from '../../utils/getdiff.js';
 const LIMIT = 10;
 
 function makeMail(updatedEnquiry: any, input: any) {
@@ -148,7 +150,7 @@ export const adminRouter = router({
         avatarUrl: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, password, ...dataToUpdate } = input;
       const updateData: any = { ...dataToUpdate };
 
@@ -161,12 +163,45 @@ export const adminRouter = router({
         }
         updateData.passwordHash = await hashPassword(password);
       }
+      const oldadmin = await prisma.adminUser.findUnique({
+        where: { id: ctx.user.id },
+        select: {
+          avatarUrl: true,
+        },
+      });
+      if (!oldadmin) {
+        throw new TRPCError({ message: 'Admin not found', code: 'NOT_FOUND' });
+      }
       try {
         const updatedAdmin = await prisma.adminUser.update({
           where: { id },
           data: updateData,
         });
         const { passwordHash: _, ...result } = updatedAdmin;
+        if (updatedAdmin.avatarUrl !== oldadmin.avatarUrl) {
+          if (oldadmin.avatarUrl) {
+            try {
+              await StorageManager.deletePersistentFile(oldadmin.avatarUrl);
+            } catch (err: unknown) {
+              if (err instanceof Error) {
+                console.error(`Failed to delete image ${oldadmin.avatarUrl}:`, err.message);
+              } else {
+                console.error(`An unexpected error occurred:`, err);
+              }
+            }
+          }
+          if (updatedAdmin.avatarUrl) {
+            try {
+              await StorageManager.persistFile(updatedAdmin.avatarUrl);
+            } catch (err: unknown) {
+              if (err instanceof Error) {
+                console.error(`Failed to move image ${updatedAdmin.avatarUrl}:`, err.message);
+              } else {
+                console.error(`An unexpected error occurred:`, err);
+              }
+            }
+          }
+        }
         return result;
       } catch (error) {
         throw new TRPCError({
@@ -375,6 +410,13 @@ export const adminRouter = router({
       }),
     )
     .mutation(async ({ input }) => {
+      const oldtrip = await prisma.trip.findUnique({ where: { id: input.id } });
+      if (!oldtrip) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Trip with ID ${input.id} not found`,
+        });
+      }
       const updatedTrip = await prisma.trip.update({
         where: { id: input.id },
         data: {
@@ -403,12 +445,37 @@ export const adminRouter = router({
           featuredCategories: input.featuredCategories,
         },
       });
-      if (!updatedTrip) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: `Trip with ID ${input.id} not found`,
-        });
+      const oldimages = oldtrip.images as unknown as string[];
+      const newimages = input.images as unknown as string[];
+      const removedImages = getDifference(oldimages, newimages);
+      const addedImages = getDifference(newimages, oldimages);
+      if (removedImages.length > 0) {
+        for (const img of removedImages) {
+          try {
+            await StorageManager.deletePersistentFile(img);
+          } catch (err: unknown) {
+            if (err instanceof Error) {
+              console.error(`Failed to delete image ${img}:`, err.message);
+            } else {
+              console.error(`An unexpected error occurred:`, err);
+            }
+          }
+        }
       }
+      if (addedImages.length > 0) {
+        for (const img of addedImages) {
+          try {
+            await StorageManager.persistFile(img);
+          } catch (err: unknown) {
+            if (err instanceof Error) {
+              console.error(`Failed to move image ${img}:`, err.message);
+            } else {
+              console.error(`An unexpected error occurred:`, err);
+            }
+          }
+        }
+      }
+
       if (updatedTrip.status === 'CANCELLED') {
         await prisma.booking.updateMany({
           where: {

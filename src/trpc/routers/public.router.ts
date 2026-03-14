@@ -12,42 +12,29 @@ interface FormDataType {
   email: string;
   subject: string;
   destination: string;
-  groupSize: string | number; // Assuming input might be string from form
+  groupSize: string | number;
   travelDates: string;
   phoneNumber: string;
   message: string;
 }
 
-// 2. Define the interface for the validation errors
 type ValidationErrors = Partial<Record<keyof FormDataType, string>>;
 
-/**
- * Validates the form data based on specific rules.
- */
 const validateForm = (formData: FormDataType): { isValid: boolean; errors: ValidationErrors } => {
   const errors: ValidationErrors = {};
   let isValid = true;
-
-  // 1. Required Fields Check
   const requiredFields: (keyof FormDataType)[] = ['fullName', 'subject', 'email', 'message'];
 
   requiredFields.forEach(field => {
     if (!formData[field] || String(formData[field]).trim() === '') {
-      // Basic formatting for error message
       errors[field] = `${field.replace(/([A-Z])/g, ' $1').trim()} is required`;
       isValid = false;
     }
   });
-
-  // 2. Specific Format Checks
-
-  // Email Validation
   if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
     errors.email = 'Email address is invalid';
     isValid = false;
   }
-
-  // Phone Number Validation (Basic check for numbers and length)
   if (formData.phoneNumber && !/^\d{7,15}$/.test(formData.phoneNumber.replace(/\D/g, ''))) {
     errors.phoneNumber = 'Phone number is invalid (7-15 digits)';
     isValid = false;
@@ -145,31 +132,31 @@ export const publicRouter = router({
   createEnquiry: publicProcedure
     .input(
       z.object({
-        fullName: z.string(),
+        fullName: z.string().optional(),
         institutionName: z.string().optional(),
         designation: z.string().optional(),
-        email: z.email(),
+        email: z.string().optional(),
         phoneNumber: z.string().optional(),
-        subject: z.string(),
+        subject: z.string().optional(),
         destination: z.string().optional(),
         groupSize: z.string().optional(),
         travelDates: z.string().optional(),
-        message: z.string(),
+        message: z.string().optional(),
         type: z.enum(EnquiryType),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const dataToValidate: FormDataType = {
-        fullName: input.fullName,
+        fullName: input.fullName || '',
         institutionName: input.institutionName || '',
         designation: input.designation || '',
-        email: input.email,
-        subject: input.subject,
+        email: input.email || '',
+        subject: input.subject || '',
         destination: input.destination || '',
         groupSize: input.groupSize || '',
         travelDates: input.travelDates || '',
         phoneNumber: input.phoneNumber || '',
-        message: input.message,
+        message: input.message || '',
       };
       if (validateForm(dataToValidate).isValid === false) {
         throw new TRPCError({
@@ -179,16 +166,16 @@ export const publicRouter = router({
       }
       return await prisma.enquiry.create({
         data: {
-          fullName: input.fullName,
+          fullName: input.fullName || '',
           institutionName: input.institutionName ?? null,
           designation: input.designation ?? null,
-          email: input.email,
-          subject: input.subject,
+          email: input.email || '',
+          subject: input.subject || '',
           destination: input.destination ?? null,
           groupSize: input.groupSize ?? null,
           travelDates: input.travelDates ?? null,
           phoneNumber: input.phoneNumber || null,
-          message: input.message,
+          message: input.message || '',
           type: input.type,
         },
       });

@@ -8,7 +8,7 @@ import type { GoogleUserInfo } from '../types/oauth.js';
 import { hashPassword } from '../utils/password.js';
 import { AccountStatus } from '../generated/prisma/enums.js';
 import { v4 as uuidv4 } from 'uuid';
-import { UPLOAD_DIR } from '../middleware/upload.middleware.js';
+import { PERSISTENT_DIR } from '../middleware/upload.middleware.js';
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
@@ -19,7 +19,7 @@ const userOAuthRouter = Router();
 async function downloadAvatar(url: string): Promise<string | null> {
   try {
     const fileName = `${uuidv4()}.jpg`;
-    const filePath = path.join(UPLOAD_DIR, fileName);
+    const filePath = path.join(PERSISTENT_DIR, fileName);
     const response = await axios({
       url,
       method: 'GET',

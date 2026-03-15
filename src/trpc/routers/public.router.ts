@@ -113,6 +113,12 @@ export const publicRouter = router({
         },
         tripType: 1,
       },
+      select: {
+        destination: true,
+        days: true,
+        startDateTime: true,
+      },
+      take: 1000,
     });
     const destinations = [...new Set(tripFilters.map(t => t.destination))].sort();
     const durations = [...new Set(tripFilters.filter(t => t.days !== null).map(t => t.days))].sort(

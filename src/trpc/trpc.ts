@@ -12,7 +12,7 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   }
   const dbUser = await prisma.user.findUnique({
     where: { id: ctx.user.id },
-    select: { id: true, status: true, fullName: true, email: true, avatarUrl: true },
+    select: { id: true, status: true },
   });
   if (!dbUser) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });

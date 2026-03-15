@@ -24,6 +24,7 @@ async function downloadAvatar(url: string): Promise<string | null> {
       url,
       method: 'GET',
       responseType: 'stream',
+      timeout: 5000,
     });
 
     return new Promise((resolve, reject) => {

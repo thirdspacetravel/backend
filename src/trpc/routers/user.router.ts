@@ -149,7 +149,10 @@ export const userRouter = router({
       }),
     )
     .mutation(async ({ input }) => {
-      const existingUser = await prisma.user.findUnique({ where: { email: input.email } });
+      const existingUser = await prisma.user.findUnique({
+        where: { email: input.email },
+        select: { id: true, status: true },
+      });
       if (existingUser) {
         if (existingUser.status === 'SUSPENDED') {
           throw new TRPCError({

@@ -62,7 +62,7 @@ export const publicRouter = router({
       };
 
       if (destination) {
-        where.destination = { contains: destination, mode: 'insensitive' };
+        where.destination = { contains: destination };
       }
       if (duration) {
         where.days = duration;

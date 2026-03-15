@@ -47,32 +47,90 @@ export const publicRouter = router({
     .input(
       z.object({
         limit: z.number().min(1).max(100).default(10),
-        page: z.number().min(1).default(1),
+        cursor: z.number().nullish(),
+        destination: z.string().nullish(),
+        duration: z.number().nullish(),
+        month: z.string().nullish(),
       }),
     )
     .query(async ({ input }) => {
-      const skip = (input.page - 1) * input.limit;
-      const liveTrips = await prisma.trip.findMany({
-        take: input.limit,
-        skip: skip,
-        where: {
-          status: {
-            not: 'DRAFT',
-          },
-          tripType: 1,
-        },
-        orderBy: {
-          tripNo: 'desc',
-        },
-      });
+      const { limit, cursor, destination, duration, month } = input;
 
-      return liveTrips.map(trip => ({
+      const where: any = {
+        status: { not: 'DRAFT' },
+        tripType: 1,
+      };
+
+      if (destination) {
+        where.destination = { contains: destination, mode: 'insensitive' };
+      }
+      if (duration) {
+        where.days = duration;
+      }
+      if (month) {
+        const startDate = new Date(month);
+        const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1);
+        where.startDateTime = { gte: startDate, lt: endDate };
+      }
+
+      // Build query arguments dynamically to satisfy strict TS rules
+      const queryArgs: any = {
+        take: limit + 1,
+        where,
+        orderBy: { tripNo: 'desc' },
+      };
+
+      if (typeof cursor === 'number') {
+        queryArgs.cursor = { tripNo: cursor };
+        queryArgs.skip = 1; // Skip the cursor itself
+      }
+
+      const items = await prisma.trip.findMany(queryArgs);
+
+      let nextCursor: number | undefined = undefined;
+      if (items.length > limit) {
+        const nextItem = items.pop();
+        nextCursor = nextItem?.tripNo;
+      }
+
+      const trips = items.map(trip => ({
         ...trip,
-        itinerary: trip.itinerary as unknown as DayData[],
+        itinerary: trip.itinerary as unknown as any[],
         categories: trip.categories as unknown as string[],
         images: trip.images as unknown as string[],
       }));
+
+      return {
+        trips,
+        nextCursor,
+      };
     }),
+  tripFilters: publicProcedure.query(async () => {
+    const tripFilters = await prisma.trip.findMany({
+      where: {
+        status: {
+          not: 'DRAFT',
+        },
+        tripType: 1,
+      },
+    });
+    const destinations = [...new Set(tripFilters.map(t => t.destination))].sort();
+    const durations = [...new Set(tripFilters.filter(t => t.days !== null).map(t => t.days))].sort(
+      (a, b) => a! - b!,
+    );
+    const months = [
+      ...new Set(
+        tripFilters
+          .filter(t => t.startDateTime !== null)
+          .map(t => {
+            const date = new Date(t.startDateTime!);
+            return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+          }),
+      ),
+    ].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+    return { destinations, durations, months };
+  }),
   fetchUpcomingTrips: publicProcedure
     .input(
       z.object({

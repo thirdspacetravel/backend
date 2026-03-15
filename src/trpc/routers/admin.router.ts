@@ -230,12 +230,41 @@ export const adminRouter = router({
     .input(
       z.object({
         page: z.number().min(1).default(1),
+        keyword: z.string().optional(),
+        status: z.enum(TripStatus).optional(),
       }),
     )
     .query(async ({ input }) => {
       const skip = (input.page - 1) * LIMIT;
 
+      const where: Prisma.TripWhereInput = {};
+
+      if (input.keyword) {
+        if (input.keyword.startsWith('#')) {
+          const match = input.keyword.match(/\d+/);
+          const tripNumber = match ? parseInt(match[0], 10) : null;
+
+          if (tripNumber !== null && tripNumber !== 0) {
+            where.tripNo = tripNumber;
+          }
+        } else {
+          where.OR = [
+            {
+              tripName: {
+                contains: input.keyword,
+              },
+            },
+            {
+              destination: {
+                contains: input.keyword,
+              },
+            },
+          ];
+        }
+      }
+
       const trips = await prisma.trip.findMany({
+        where,
         take: LIMIT,
         skip: skip,
         orderBy: {
@@ -266,13 +295,46 @@ export const adminRouter = router({
       });
     }),
 
-  getTripsCount: adminProcedure.query(async () => {
-    const count = await prisma.trip.count();
-    return {
-      total: count,
-      totalPages: Math.ceil(count / LIMIT),
-    };
-  }),
+  getTripsCount: adminProcedure
+    .input(
+      z.object({
+        keyword: z.string().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const where: Prisma.TripWhereInput = {};
+
+      if (input.keyword) {
+        if (input.keyword.startsWith('#')) {
+          const match = input.keyword.match(/\d+/);
+          const tripNumber = match ? parseInt(match[0], 10) : null;
+
+          if (tripNumber !== null && tripNumber !== 0) {
+            where.tripNo = tripNumber;
+          }
+        } else {
+          where.OR = [
+            {
+              tripName: {
+                contains: input.keyword,
+              },
+            },
+            {
+              destination: {
+                contains: input.keyword,
+              },
+            },
+          ];
+        }
+      }
+
+      const count = await prisma.trip.count({ where });
+
+      return {
+        total: count,
+        totalPages: Math.ceil(count / LIMIT),
+      };
+    }),
   fetchUsers: adminProcedure
     .input(
       z.object({

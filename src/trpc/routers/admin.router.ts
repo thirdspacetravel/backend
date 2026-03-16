@@ -23,7 +23,7 @@ import {
   getEnquirySearchWhere,
   getTripSearchWhere,
   getUserSearchWhere,
-} from '@/utils/where.prisma.js';
+} from '../../utils/where.prisma.js';
 import { get } from 'http';
 const LIMIT = 10;
 

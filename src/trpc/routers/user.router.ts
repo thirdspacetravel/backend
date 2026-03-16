@@ -22,22 +22,39 @@ type UserDataType = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'passwordHash'
 const packageOptions = ['Quad Sharing', 'Triple Sharing', 'Double Sharing'];
 
 export const verificationEmailHtml = (url: string) => `
-  <div style="font-family: 'Poppins', sans-serif; padding: 20px; color: #333;">
-    <h2 style="color: #4A90E2;">Welcome to Third Space Travel!</h2>
-    <p>Please click the button below to verify your email address and activate your account.</p>
-    <a href="${url}" style="
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #4A90E2;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      margin-top: 10px;
-    ">Verify Email</a>
-    <p style="margin-top: 20px; font-size: 12px; color: #888;">
-      If you did not request this, please ignore this email.
-    </p>
-  </div>
+    <div
+      style="
+        font-family: &quot;Poppins&quot;, sans-serif;
+        padding: 20px;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      "
+    >
+      <h2 style="color: #000">Welcome to Third Space Travel!</h2>
+      <p>
+        Please click the button below to verify your email address and activate
+        your account.
+      </p>
+      <a
+        href="${url}"
+        style="
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: #333;
+          color: white;
+          text-decoration: none;
+          border-radius: 12px;
+          margin-top: 10px;
+        "
+        >Verify Email</a
+      >
+      <p style="margin-top: 20px; font-size: 12px; color: #9aa0a6">
+        If you did not request this, please ignore this email.
+      </p>
+    </div>
 `;
 
 export const userData = z
@@ -115,6 +132,12 @@ export const userRouter = router({
           text: `Click this link to verify: ${url}`,
           html: verificationEmailHtml(url),
         });
+        if (!result) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to send verification email. Please try again later.',
+          });
+        }
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: `Please verify your email to log in. A new verification email has been sent to ${user.email}.`,
@@ -180,6 +203,12 @@ export const userRouter = router({
         text: `Click this link to verify: ${url}`,
         html: verificationEmailHtml(url),
       });
+      if (!result) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to send verification email. Please try again later.',
+        });
+      }
       return { success: true, emailSent: result.success };
     }),
   getMe: protectedProcedure.query(async ({ ctx }) => {

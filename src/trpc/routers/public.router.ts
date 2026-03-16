@@ -228,7 +228,7 @@ export const publicRouter = router({
           message: JSON.stringify(validateForm(dataToValidate).errors),
         });
       }
-      return await prisma.enquiry.create({
+      const enquiry = await prisma.enquiry.create({
         data: {
           fullName: input.fullName || '',
           institutionName: input.institutionName ?? null,
@@ -243,6 +243,13 @@ export const publicRouter = router({
           type: input.type,
         },
       });
+      if (!enquiry) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to submit enquiry. Please try again later.',
+        });
+      }
+      return { success: true, message: 'Enquiry submitted successfully!' };
     }),
   fetchStats: publicProcedure.query(async () => {
     const totalTrips = await prisma.trip.count({

@@ -39,7 +39,7 @@ const isAdmin = t.middleware(({ ctx, next }) => {
   if (!ctx.user || ctx.user.role !== 'admin') {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
-      message: 'You must be an admin to perform this action',
+      message: 'You must be an admin to perform this action.',
     });
   }
   return next({

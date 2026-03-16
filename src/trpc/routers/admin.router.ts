@@ -18,6 +18,13 @@ import { StorageManager } from '../../utils/StorageManager.js';
 import { getDifference } from '../../utils/getdiff.js';
 import path from 'path';
 import { stringify } from 'csv-stringify';
+import {
+  getBookingSearchWhere,
+  getEnquirySearchWhere,
+  getTripSearchWhere,
+  getUserSearchWhere,
+} from '@/utils/where.prisma.js';
+import { get } from 'http';
 const LIMIT = 10;
 
 function makeMail(updatedEnquiry: any, input: any) {
@@ -240,31 +247,7 @@ export const adminRouter = router({
     .query(async ({ input }) => {
       const skip = (input.page - 1) * LIMIT;
 
-      const where: Prisma.TripWhereInput = {};
-
-      if (input.keyword) {
-        if (input.keyword.startsWith('#')) {
-          const match = input.keyword.match(/\d+/);
-          const tripNumber = match ? parseInt(match[0], 10) : null;
-
-          if (tripNumber !== null && tripNumber !== 0) {
-            where.tripNo = tripNumber;
-          }
-        } else {
-          where.OR = [
-            {
-              tripName: {
-                contains: input.keyword,
-              },
-            },
-            {
-              destination: {
-                contains: input.keyword,
-              },
-            },
-          ];
-        }
-      }
+      const where = getTripSearchWhere(input.keyword);
 
       const trips = await prisma.trip.findMany({
         where,
@@ -305,32 +288,7 @@ export const adminRouter = router({
       }),
     )
     .query(async ({ input }) => {
-      const where: Prisma.TripWhereInput = {};
-
-      if (input.keyword) {
-        if (input.keyword.startsWith('#')) {
-          const match = input.keyword.match(/\d+/);
-          const tripNumber = match ? parseInt(match[0], 10) : null;
-
-          if (tripNumber !== null && tripNumber !== 0) {
-            where.tripNo = tripNumber;
-          }
-        } else {
-          where.OR = [
-            {
-              tripName: {
-                contains: input.keyword,
-              },
-            },
-            {
-              destination: {
-                contains: input.keyword,
-              },
-            },
-          ];
-        }
-      }
-
+      const where = getTripSearchWhere(input.keyword);
       const count = await prisma.trip.count({ where });
 
       return {
@@ -347,22 +305,7 @@ export const adminRouter = router({
     )
     .query(async ({ input }) => {
       const skip = (input.page - 1) * LIMIT;
-      const where: Prisma.UserWhereInput = {};
-
-      if (input.keyword) {
-        where.OR = [
-          {
-            fullName: {
-              contains: input.keyword,
-            },
-          },
-          {
-            email: {
-              contains: input.keyword,
-            },
-          },
-        ];
-      }
+      const where: Prisma.UserWhereInput = getUserSearchWhere(input.keyword);
       const users = await prisma.user.findMany({
         where,
         take: LIMIT,
@@ -415,22 +358,7 @@ export const adminRouter = router({
       }),
     )
     .query(async ({ input }) => {
-      const where: Prisma.UserWhereInput = {};
-
-      if (input.keyword) {
-        where.OR = [
-          {
-            fullName: {
-              contains: input.keyword,
-            },
-          },
-          {
-            email: {
-              contains: input.keyword,
-            },
-          },
-        ];
-      }
+      const where: Prisma.UserWhereInput = getUserSearchWhere(input.keyword);
 
       const count = await prisma.user.count({ where });
       return {
@@ -637,12 +565,14 @@ export const adminRouter = router({
     .input(
       z.object({
         page: z.number().min(1).default(1),
+        keyword: z.string().optional(),
       }),
     )
     .query(async ({ input }) => {
       const skip = (input.page - 1) * LIMIT;
-
+      const where = getBookingSearchWhere(input.keyword);
       const bookings = await prisma.booking.findMany({
+        where,
         take: LIMIT,
         skip: skip,
         orderBy: {
@@ -672,13 +602,20 @@ export const adminRouter = router({
         };
       });
     }),
-  getBookingsCount: adminProcedure.query(async () => {
-    const count = await prisma.booking.count();
-    return {
-      total: count,
-      totalPages: Math.ceil(count / LIMIT),
-    };
-  }),
+  getBookingsCount: adminProcedure
+    .input(
+      z.object({
+        keyword: z.string().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const where = getBookingSearchWhere(input.keyword);
+      const count = await prisma.booking.count({ where });
+      return {
+        total: count,
+        totalPages: Math.ceil(count / LIMIT),
+      };
+    }),
   markAsRefunded: adminProcedure
     .input(
       z.object({
@@ -705,12 +642,14 @@ export const adminRouter = router({
     .input(
       z.object({
         page: z.number().min(1).default(1),
+        keyword: z.string().optional(),
       }),
     )
     .query(async ({ input }) => {
       const skip = (input.page - 1) * LIMIT;
-
+      const where = getEnquirySearchWhere(input.keyword);
       const enquiries = await prisma.enquiry.findMany({
+        where,
         take: LIMIT,
         skip: skip,
         orderBy: {
@@ -781,15 +720,21 @@ export const adminRouter = router({
         });
       }
     }),
-  getEnquiriesCount: adminProcedure.query(async () => {
-    const count = await prisma.enquiry.count();
-    return {
-      total: count,
-      totalPages: Math.ceil(count / LIMIT),
-    };
-  }),
+  getEnquiriesCount: adminProcedure
+    .input(
+      z.object({
+        keyword: z.string().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const where = getEnquirySearchWhere(input.keyword);
+      const count = await prisma.enquiry.count({ where });
+      return {
+        total: count,
+        totalPages: Math.ceil(count / LIMIT),
+      };
+    }),
 
-  // 3. Delete an enquiry by enquiryNo
   deleteEnquiry: adminProcedure
     .input(
       z.object({

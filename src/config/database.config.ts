@@ -2,42 +2,39 @@ import { PrismaClient } from '../generated/prisma/client.js';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { config } from './env.config.js';
 
-declare global {
-  namespace globalThis {
-    var prisma: PrismaClient | undefined;
-  }
-}
-
-const adapter = new PrismaMariaDb({
-  host: config.host,
-  user: config.user,
-  password: config.password,
-  database: config.name,
-  connectionLimit: 20,
-});
+// 1. Better type safety for the global object
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
 const prismaClientFactory = () => {
-  console.log('✨ Initializing New Prisma Client with MariaDB adapter...');
-  console.log(`📡 Connecting to MariaDB at ${config.host} as ${config.user}...`);
+  console.log('✨ Initializing Prisma Client & MariaDB Adapter...');
+
+  // Initialize the adapter INSIDE the factory
+  const adapter = new PrismaMariaDb({
+    host: config.host,
+    user: config.user,
+    password: config.password,
+    database: config.name,
+    connectionLimit: 5,
+  });
+
   return new PrismaClient({
     adapter,
     log: config.env === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 };
 
-export const prisma = global.prisma ?? prismaClientFactory();
-global.prisma = prisma;
+// 2. Use the singleton
+export const prisma = globalForPrisma.prisma ?? prismaClientFactory();
 
+if (config.env !== 'production') globalForPrisma.prisma = prisma;
+
+// 3. Graceful Shutdown
 const handleShutdown = async (signal: string) => {
-  console.log(`\n${signal} received. Disconnecting Prisma...`);
-  try {
-    await prisma.$disconnect();
-    console.log('Successfully disconnected from MariaDB.');
-    process.exit(0);
-  } catch (error) {
-    console.error('Error during Prisma disconnection:', error);
-    process.exit(1);
-  }
+  console.log(`\n${signal} received. Disconnecting...`);
+  await prisma.$disconnect();
+  process.exit(0);
 };
 
 process.on('SIGTERM', () => handleShutdown('SIGTERM'));

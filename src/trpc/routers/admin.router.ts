@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { prisma } from '../../config/database.config.js';
 import { router, adminProcedure, publicProcedure } from '../trpc.js';
 import z from 'zod';
+import fs from 'fs';
 import {
   EnquiryStatus,
   TripCategory,
@@ -15,6 +16,9 @@ import type { DayData } from '../../types/admin.trpc.js';
 import { sendEmail } from '../../utils/mailer.js';
 import { StorageManager } from '../../utils/StorageManager.js';
 import { getDifference } from '../../utils/getdiff.js';
+import path from 'path';
+import { TMP_DIR } from '@/middleware/upload.middleware.js';
+import { stringify } from 'csv-stringify';
 const LIMIT = 10;
 
 function makeMail(updatedEnquiry: any, input: any) {
@@ -339,12 +343,29 @@ export const adminRouter = router({
     .input(
       z.object({
         page: z.number().min(1).default(1),
+        keyword: z.string().optional(),
       }),
     )
     .query(async ({ input }) => {
       const skip = (input.page - 1) * LIMIT;
+      const where: Prisma.UserWhereInput = {};
 
+      if (input.keyword) {
+        where.OR = [
+          {
+            fullName: {
+              contains: input.keyword,
+            },
+          },
+          {
+            email: {
+              contains: input.keyword,
+            },
+          },
+        ];
+      }
       const users = await prisma.user.findMany({
+        where,
         take: LIMIT,
         skip: skip,
         orderBy: {
@@ -388,13 +409,36 @@ export const adminRouter = router({
       });
     }),
 
-  getUsersCount: adminProcedure.query(async () => {
-    const count = await prisma.user.count();
-    return {
-      total: count,
-      totalPages: Math.ceil(count / LIMIT),
-    };
-  }),
+  getUsersCount: adminProcedure
+    .input(
+      z.object({
+        keyword: z.string().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const where: Prisma.UserWhereInput = {};
+
+      if (input.keyword) {
+        where.OR = [
+          {
+            fullName: {
+              contains: input.keyword,
+            },
+          },
+          {
+            email: {
+              contains: input.keyword,
+            },
+          },
+        ];
+      }
+
+      const count = await prisma.user.count({ where });
+      return {
+        total: count,
+        totalPages: Math.ceil(count / LIMIT),
+      };
+    }),
   fetchTripById: adminProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
     const trip = await prisma.trip.findUnique({
       where: { id: input.id },
@@ -761,4 +805,67 @@ export const adminRouter = router({
       });
       return { success: true };
     }),
+  exportBookings: publicProcedure.mutation(async () => {
+    // 1. Internal Configuration
+    const targetFolder = path.join(process.cwd(), 'uploads', 'tmp');
+    // Adding a timestamp prevents file name collisions
+    const internalFilename = `bookings_export_${Date.now()}.csv`;
+    const filePath = path.join(targetFolder, internalFilename);
+
+    if (!fs.existsSync(targetFolder)) {
+      fs.mkdirSync(targetFolder, { recursive: true });
+    }
+
+    const writableStream = fs.createWriteStream(filePath);
+    const stringifier = stringify({ header: true });
+
+    // 2. Wrap in Promise to ensure completion before responding
+    const result = await new Promise<{ success: boolean; url: string }>((resolve, reject) => {
+      stringifier.pipe(writableStream);
+
+      // Standard Node.js error handling for streams
+      writableStream.on('error', err => reject(err));
+      stringifier.on('error', err => reject(err));
+
+      // This fires when the file is fully written
+      writableStream.on('finish', () => {
+        resolve({
+          success: true,
+          url: `/exports/${internalFilename}`,
+        });
+      });
+
+      // 3. Database Streaming Logic
+      (async () => {
+        try {
+          let cursor: { id: string } | undefined = undefined;
+          const batchSize = 2500;
+
+          while (true) {
+            const args: Prisma.BookingFindManyArgs = {
+              take: batchSize,
+              orderBy: { id: 'asc' },
+            };
+            if (cursor) {
+              args.cursor = cursor;
+              args.skip = 1; // Skip the cursor element itself
+            }
+
+            const bookings = await prisma.booking.findMany(args);
+
+            if (bookings.length === 0) break;
+            bookings.forEach(booking => stringifier.write(booking));
+            const lastBooking = bookings[bookings.length - 1];
+            cursor = lastBooking && lastBooking.id ? { id: lastBooking.id } : undefined;
+          }
+          stringifier.end();
+        } catch (dbError) {
+          stringifier.destroy();
+          reject(dbError);
+        }
+      })();
+    });
+
+    return result;
+  }),
 });

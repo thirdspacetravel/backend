@@ -12,7 +12,7 @@ import { corsOptions } from './config/cors.config.js';
 import { errorHandler } from './middleware/errorHandler.middleware.js';
 import { notFoundHandler } from './middleware/notFoundHandler.middleware.js';
 import { apiRouter } from './api/index.js';
-import { UPLOAD_DIR } from './middleware/upload.middleware.js';
+import { PERSISTENT_DIR, TMP_DIR, UPLOAD_DIR } from './middleware/upload.middleware.js';
 import path from 'path';
 import { initCronJobs } from './utils/cronTasks.js';
 
@@ -59,8 +59,9 @@ app.use(
 app.use(apiRouter);
 
 // images
-app.use('/images', express.static(path.join(UPLOAD_DIR, 'persistent')));
-app.use('/images', express.static(path.join(UPLOAD_DIR, 'tmp')));
+app.use('/images', express.static(PERSISTENT_DIR));
+app.use('/images', express.static(TMP_DIR));
+app.use('/exports', express.static(TMP_DIR));
 
 // Error Handling
 app.use(notFoundHandler);

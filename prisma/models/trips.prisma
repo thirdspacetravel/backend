@@ -1,6 +1,6 @@
 model Trip {
     tripNo          Int    @id @default(autoincrement())
-    id              String @unique @default(cuid())
+    id              String @unique @default(uuid())
     tripName        String @default("Untitled Trip")
     destination     String @default("Destination Not Set")
     tripType        Int?

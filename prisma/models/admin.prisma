@@ -1,5 +1,5 @@
 model AdminUser {
-    id                   String    @id @default(cuid())
+    id                   String    @id @default(uuid())
     firstName            String
     lastName             String
     username             String    @unique

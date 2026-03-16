@@ -1,6 +1,6 @@
 model Enquiry {
   enquiryNo Int    @id @default(autoincrement())
-  id        String @unique @default(cuid())
+  id        String @unique @default(uuid())
 
   // Contact Info
   fullName        String

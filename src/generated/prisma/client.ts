@@ -55,6 +55,11 @@ export type Booking = Prisma.BookingModel
  */
 export type Enquiry = Prisma.EnquiryModel
 /**
+ * Model NewsLetter
+ * 
+ */
+export type NewsLetter = Prisma.NewsLetterModel
+/**
  * Model Trip
  * 
  */

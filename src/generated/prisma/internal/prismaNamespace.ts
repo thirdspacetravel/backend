@@ -387,6 +387,7 @@ export const ModelName = {
   AdminUser: 'AdminUser',
   Booking: 'Booking',
   Enquiry: 'Enquiry',
+  NewsLetter: 'NewsLetter',
   Trip: 'Trip',
   User: 'User'
 } as const
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "adminUser" | "booking" | "enquiry" | "trip" | "user"
+    modelProps: "adminUser" | "booking" | "enquiry" | "newsLetter" | "trip" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -603,6 +604,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.EnquiryCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.EnquiryCountAggregateOutputType> | number
+        }
+      }
+    }
+    NewsLetter: {
+      payload: Prisma.$NewsLetterPayload<ExtArgs>
+      fields: Prisma.NewsLetterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NewsLetterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NewsLetterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload>
+        }
+        findFirst: {
+          args: Prisma.NewsLetterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NewsLetterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload>
+        }
+        findMany: {
+          args: Prisma.NewsLetterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload>[]
+        }
+        create: {
+          args: Prisma.NewsLetterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload>
+        }
+        createMany: {
+          args: Prisma.NewsLetterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.NewsLetterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload>
+        }
+        update: {
+          args: Prisma.NewsLetterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload>
+        }
+        deleteMany: {
+          args: Prisma.NewsLetterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NewsLetterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.NewsLetterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsLetterPayload>
+        }
+        aggregate: {
+          args: Prisma.NewsLetterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNewsLetter>
+        }
+        groupBy: {
+          args: Prisma.NewsLetterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsLetterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NewsLetterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsLetterCountAggregateOutputType> | number
         }
       }
     }
@@ -847,6 +914,14 @@ export const EnquiryScalarFieldEnum = {
 export type EnquiryScalarFieldEnum = (typeof EnquiryScalarFieldEnum)[keyof typeof EnquiryScalarFieldEnum]
 
 
+export const NewsLetterScalarFieldEnum = {
+  id: 'id',
+  email: 'email'
+} as const
+
+export type NewsLetterScalarFieldEnum = (typeof NewsLetterScalarFieldEnum)[keyof typeof NewsLetterScalarFieldEnum]
+
+
 export const TripScalarFieldEnum = {
   tripNo: 'tripNo',
   id: 'id',
@@ -984,6 +1059,14 @@ export const EnquiryOrderByRelevanceFieldEnum = {
 } as const
 
 export type EnquiryOrderByRelevanceFieldEnum = (typeof EnquiryOrderByRelevanceFieldEnum)[keyof typeof EnquiryOrderByRelevanceFieldEnum]
+
+
+export const NewsLetterOrderByRelevanceFieldEnum = {
+  id: 'id',
+  email: 'email'
+} as const
+
+export type NewsLetterOrderByRelevanceFieldEnum = (typeof NewsLetterOrderByRelevanceFieldEnum)[keyof typeof NewsLetterOrderByRelevanceFieldEnum]
 
 
 export const JsonNullValueFilter = {
@@ -1267,6 +1350,7 @@ export type GlobalOmitConfig = {
   adminUser?: Prisma.AdminUserOmit
   booking?: Prisma.BookingOmit
   enquiry?: Prisma.EnquiryOmit
+  newsLetter?: Prisma.NewsLetterOmit
   trip?: Prisma.TripOmit
   user?: Prisma.UserOmit
 }

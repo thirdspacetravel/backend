@@ -4,7 +4,7 @@ import type { DayData } from '../../types/admin.trpc.js';
 import z from 'zod';
 import { TRPCError } from '@trpc/server';
 import { EnquiryType } from '../../generated/prisma/enums.js';
-
+import { Prisma } from '@/generated/prisma/client.js';
 interface FormDataType {
   fullName: string;
   institutionName: string;
@@ -282,4 +282,32 @@ export const publicRouter = router({
       totalRevenue: successSummary._sum.amount ?? 0,
     };
   }),
+  subscribeToNewsletter: publicProcedure
+    .input(z.object({ email: z.email() }))
+    .mutation(async ({ input }) => {
+      try {
+        const newsletter = await prisma.newsLetter.create({
+          data: {
+            email: input.email,
+          },
+        });
+
+        return {
+          success: true,
+          message: 'Successfully subscribed to newsletter!',
+        };
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: 'This email is already subscribed.',
+          });
+        }
+
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to subscribe to newsletter. Please try again later.',
+        });
+      }
+    }),
 });

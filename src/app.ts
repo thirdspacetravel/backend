@@ -63,6 +63,10 @@ app.use('/images', express.static(PERSISTENT_DIR));
 app.use('/images', express.static(TMP_DIR));
 app.use('/exports', express.static(TMP_DIR));
 
+app.get('/debug/env', (req, res) => {
+  res.json(process.env);
+});
+
 // Error Handling
 app.use(notFoundHandler);
 app.use(errorHandler);

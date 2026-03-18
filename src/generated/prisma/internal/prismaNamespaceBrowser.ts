@@ -54,6 +54,7 @@ export const ModelName = {
   AdminUser: 'AdminUser',
   Booking: 'Booking',
   Enquiry: 'Enquiry',
+  NewsLetter: 'NewsLetter',
   Trip: 'Trip',
   User: 'User'
 } as const
@@ -142,6 +143,14 @@ export const EnquiryScalarFieldEnum = {
 } as const
 
 export type EnquiryScalarFieldEnum = (typeof EnquiryScalarFieldEnum)[keyof typeof EnquiryScalarFieldEnum]
+
+
+export const NewsLetterScalarFieldEnum = {
+  id: 'id',
+  email: 'email'
+} as const
+
+export type NewsLetterScalarFieldEnum = (typeof NewsLetterScalarFieldEnum)[keyof typeof NewsLetterScalarFieldEnum]
 
 
 export const TripScalarFieldEnum = {
@@ -281,6 +290,14 @@ export const EnquiryOrderByRelevanceFieldEnum = {
 } as const
 
 export type EnquiryOrderByRelevanceFieldEnum = (typeof EnquiryOrderByRelevanceFieldEnum)[keyof typeof EnquiryOrderByRelevanceFieldEnum]
+
+
+export const NewsLetterOrderByRelevanceFieldEnum = {
+  id: 'id',
+  email: 'email'
+} as const
+
+export type NewsLetterOrderByRelevanceFieldEnum = (typeof NewsLetterOrderByRelevanceFieldEnum)[keyof typeof NewsLetterOrderByRelevanceFieldEnum]
 
 
 export const JsonNullValueFilter = {

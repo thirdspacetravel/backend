@@ -1,0 +1,4 @@
+model NewsLetter {
+    id    String @id @default(uuid())
+    email String @unique
+}

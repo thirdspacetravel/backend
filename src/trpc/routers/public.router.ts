@@ -4,7 +4,7 @@ import type { DayData } from '../../types/admin.trpc.js';
 import z from 'zod';
 import { TRPCError } from '@trpc/server';
 import { EnquiryType } from '../../generated/prisma/enums.js';
-import { Prisma } from '@/generated/prisma/client.js';
+import { Prisma } from '../../generated/prisma/client.js';
 interface FormDataType {
   fullName: string;
   institutionName: string;

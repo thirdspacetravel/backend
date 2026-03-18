@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
-
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: `.env.development` });
+}
 const envSchema = z.object({
   PORT: z.coerce.number().default(8080),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -21,7 +22,6 @@ const envSchema = z.object({
   FRONTEND_URL: z.string().default('http://localhost:3000'),
   PHONEPE_CID: z.string(),
   PHONEPE_CLIENT_KEY: z.string(),
-  PHONEPE_CALLBACK_URL: z.string(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -46,7 +46,6 @@ const env = parsed.success
       FRONTEND_URL: '',
       PHONEPE_CID: '',
       PHONEPE_CLIENT_KEY: '',
-      PHONEPE_CALLBACK_URL: '',
     };
 
 export const config = {
@@ -67,5 +66,4 @@ export const config = {
   frontendUrl: env.FRONTEND_URL,
   phonepeCid: env.PHONEPE_CID,
   phonepeClientKey: env.PHONEPE_CLIENT_KEY,
-  phonepeCallbackUrl: env.PHONEPE_CALLBACK_URL,
 } as const;

@@ -505,48 +505,73 @@ export const userRouter = router({
   pendingPayment: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
-      try {
-        const repsonse = await phonePeProvider.checkOrderStatus(input.id);
-        if (!repsonse.state) {
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message:
-              'Invalid Booking ID or unable to fetch payment status. Please try again later.',
-          });
-        }
-        if (repsonse.state === 'COMPLETED') {
-          await prisma.booking.update({
-            where: { id: input.id },
-            data: { resultStatus: 'TXN_SUCCESS' },
-          });
-          return { hasPendingPayment: false, hasPaymentFailed: false };
-        }
-        if (repsonse.state === 'FAILED') {
-          await prisma.booking.update({
-            where: { id: input.id },
-            data: { resultStatus: 'TXN_FAILURE' },
-          });
-          return { hasPendingPayment: false, hasPaymentFailed: true };
-        }
-        const booking = await prisma.booking.findUnique({
-          where: {
-            id: input.id,
-            resultStatus: 'TXN_PENDING',
-          },
-        });
-        if (!booking) {
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'No pending payment found for this booking ID.',
-          });
-        }
-        return { hasPendingPayment: !!booking, paymentUrl: booking.paymentUrl };
-      } catch (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to check payment status. Please try again later.',
-        });
-      }
+      return await prisma.$transaction(
+        async tx => {
+          try {
+            const repsonse = await phonePeProvider.checkOrderStatus(input.id);
+            if (!repsonse.state) {
+              throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message:
+                  'Invalid Booking ID or unable to fetch payment status. Please try again later.',
+              });
+            }
+            if (repsonse.state === 'COMPLETED') {
+              await prisma.booking.update({
+                where: { id: input.id },
+                data: {
+                  resultStatus: 'TXN_SUCCESS',
+                  txnId: repsonse.paymentDetails[0]?.transactionId,
+                  txnDate: new Date(repsonse.paymentDetails[0]?.timestamp || Date.now()),
+                },
+              });
+              return { hasPendingPayment: false, hasPaymentFailed: false };
+            }
+            if (repsonse.state === 'FAILED') {
+              await prisma.booking.update({
+                where: { id: input.id },
+                data: { resultStatus: 'TXN_FAILURE' },
+              });
+              return { hasPendingPayment: false, hasPaymentFailed: true };
+            }
+
+            const booking = await prisma.booking.findUnique({
+              where: {
+                id: input.id,
+              },
+            });
+
+            if (!booking) {
+              throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'No pending payment found for this booking ID.',
+              });
+            }
+            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+            if (booking.createdAt > tenMinutesAgo) {
+              return { hasPendingPayment: !!booking, paymentUrl: booking.paymentUrl };
+            }
+            await prisma.booking.delete({
+              where: {
+                id: input.id,
+              },
+            });
+            throw new TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message: 'Payment Link Expired. Please try again.',
+            });
+          } catch (error) {
+            throw new TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message: 'Failed to check payment status. Please try again later.',
+            });
+          }
+        },
+        {
+          timeout: 10000,
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        },
+      );
     }),
   fetchBookings: protectedProcedure.query(async ({ ctx }) => {
     const bookings = await prisma.booking.findMany({

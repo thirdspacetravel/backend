@@ -903,10 +903,6 @@ export type NullableEnumTripCategoryFieldUpdateOperationsInput = {
   set?: $Enums.TripCategory | null
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type TripCreateWithoutBookingsInput = {
   id?: string
   tripName?: string

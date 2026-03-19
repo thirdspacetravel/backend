@@ -191,7 +191,7 @@ export const publicRouter = router({
               where: {
                 userid: userId,
                 resultStatus: {
-                  not: 'TXN_FAILURE',
+                  in: ['TXN_SUCCESS', 'TXN_PENDING'],
                 },
               },
             },

@@ -52,7 +52,11 @@ export const initCronJobs = () => {
           if (newStatus !== TransactionStatus.TXN_PENDING) {
             await prisma.booking.update({
               where: { id: order.id },
-              data: { resultStatus: newStatus },
+              data: {
+                resultStatus: newStatus,
+                txnId: response.paymentDetails[0]?.transactionId,
+                txnDate: new Date(response.paymentDetails[0]?.timestamp || Date.now()),
+              },
             });
             console.log(`Updated Order ${order.id} to ${newStatus}`);
           }

@@ -30,12 +30,14 @@ export type BookingAvgAggregateOutputType = {
   bookingno: number | null
   adults: number | null
   amount: runtime.Decimal | null
+  refundAmt: runtime.Decimal | null
 }
 
 export type BookingSumAggregateOutputType = {
   bookingno: number | null
   adults: number | null
   amount: runtime.Decimal | null
+  refundAmt: runtime.Decimal | null
 }
 
 export type BookingMinAggregateOutputType = {
@@ -48,14 +50,8 @@ export type BookingMinAggregateOutputType = {
   amount: runtime.Decimal | null
   resultStatus: $Enums.TransactionStatus | null
   txnId: string | null
-  bankTxnId: string | null
-  txnAmount: string | null
-  txnType: string | null
-  gatewayName: string | null
-  bankName: string | null
-  paymentMode: string | null
-  refundAmt: string | null
-  txnDate: string | null
+  txnDate: Date | null
+  refundAmt: runtime.Decimal | null
   refunded: boolean | null
   paymentUrl: string | null
   createdAt: Date | null
@@ -72,14 +68,8 @@ export type BookingMaxAggregateOutputType = {
   amount: runtime.Decimal | null
   resultStatus: $Enums.TransactionStatus | null
   txnId: string | null
-  bankTxnId: string | null
-  txnAmount: string | null
-  txnType: string | null
-  gatewayName: string | null
-  bankName: string | null
-  paymentMode: string | null
-  refundAmt: string | null
-  txnDate: string | null
+  txnDate: Date | null
+  refundAmt: runtime.Decimal | null
   refunded: boolean | null
   paymentUrl: string | null
   createdAt: Date | null
@@ -96,14 +86,8 @@ export type BookingCountAggregateOutputType = {
   amount: number
   resultStatus: number
   txnId: number
-  bankTxnId: number
-  txnAmount: number
-  txnType: number
-  gatewayName: number
-  bankName: number
-  paymentMode: number
-  refundAmt: number
   txnDate: number
+  refundAmt: number
   refunded: number
   paymentUrl: number
   createdAt: number
@@ -116,12 +100,14 @@ export type BookingAvgAggregateInputType = {
   bookingno?: true
   adults?: true
   amount?: true
+  refundAmt?: true
 }
 
 export type BookingSumAggregateInputType = {
   bookingno?: true
   adults?: true
   amount?: true
+  refundAmt?: true
 }
 
 export type BookingMinAggregateInputType = {
@@ -134,14 +120,8 @@ export type BookingMinAggregateInputType = {
   amount?: true
   resultStatus?: true
   txnId?: true
-  bankTxnId?: true
-  txnAmount?: true
-  txnType?: true
-  gatewayName?: true
-  bankName?: true
-  paymentMode?: true
-  refundAmt?: true
   txnDate?: true
+  refundAmt?: true
   refunded?: true
   paymentUrl?: true
   createdAt?: true
@@ -158,14 +138,8 @@ export type BookingMaxAggregateInputType = {
   amount?: true
   resultStatus?: true
   txnId?: true
-  bankTxnId?: true
-  txnAmount?: true
-  txnType?: true
-  gatewayName?: true
-  bankName?: true
-  paymentMode?: true
-  refundAmt?: true
   txnDate?: true
+  refundAmt?: true
   refunded?: true
   paymentUrl?: true
   createdAt?: true
@@ -182,14 +156,8 @@ export type BookingCountAggregateInputType = {
   amount?: true
   resultStatus?: true
   txnId?: true
-  bankTxnId?: true
-  txnAmount?: true
-  txnType?: true
-  gatewayName?: true
-  bankName?: true
-  paymentMode?: true
-  refundAmt?: true
   txnDate?: true
+  refundAmt?: true
   refunded?: true
   paymentUrl?: true
   createdAt?: true
@@ -293,14 +261,8 @@ export type BookingGroupByOutputType = {
   amount: runtime.Decimal
   resultStatus: $Enums.TransactionStatus
   txnId: string | null
-  bankTxnId: string | null
-  txnAmount: string | null
-  txnType: string | null
-  gatewayName: string | null
-  bankName: string | null
-  paymentMode: string | null
-  refundAmt: string | null
-  txnDate: string | null
+  txnDate: Date | null
+  refundAmt: runtime.Decimal | null
   refunded: boolean
   paymentUrl: string | null
   createdAt: Date
@@ -340,14 +302,8 @@ export type BookingWhereInput = {
   amount?: Prisma.DecimalFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFilter<"Booking"> | $Enums.TransactionStatus
   txnId?: Prisma.StringNullableFilter<"Booking"> | string | null
-  bankTxnId?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnAmount?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnType?: Prisma.StringNullableFilter<"Booking"> | string | null
-  gatewayName?: Prisma.StringNullableFilter<"Booking"> | string | null
-  bankName?: Prisma.StringNullableFilter<"Booking"> | string | null
-  paymentMode?: Prisma.StringNullableFilter<"Booking"> | string | null
-  refundAmt?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnDate?: Prisma.StringNullableFilter<"Booking"> | string | null
+  txnDate?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  refundAmt?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFilter<"Booking"> | boolean
   paymentUrl?: Prisma.StringNullableFilter<"Booking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
@@ -366,14 +322,8 @@ export type BookingOrderByWithRelationInput = {
   amount?: Prisma.SortOrder
   resultStatus?: Prisma.SortOrder
   txnId?: Prisma.SortOrderInput | Prisma.SortOrder
-  bankTxnId?: Prisma.SortOrderInput | Prisma.SortOrder
-  txnAmount?: Prisma.SortOrderInput | Prisma.SortOrder
-  txnType?: Prisma.SortOrderInput | Prisma.SortOrder
-  gatewayName?: Prisma.SortOrderInput | Prisma.SortOrder
-  bankName?: Prisma.SortOrderInput | Prisma.SortOrder
-  paymentMode?: Prisma.SortOrderInput | Prisma.SortOrder
-  refundAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   txnDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  refundAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   refunded?: Prisma.SortOrder
   paymentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -397,14 +347,8 @@ export type BookingWhereUniqueInput = Prisma.AtLeast<{
   adults?: Prisma.IntFilter<"Booking"> | number
   amount?: Prisma.DecimalFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFilter<"Booking"> | $Enums.TransactionStatus
-  bankTxnId?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnAmount?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnType?: Prisma.StringNullableFilter<"Booking"> | string | null
-  gatewayName?: Prisma.StringNullableFilter<"Booking"> | string | null
-  bankName?: Prisma.StringNullableFilter<"Booking"> | string | null
-  paymentMode?: Prisma.StringNullableFilter<"Booking"> | string | null
-  refundAmt?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnDate?: Prisma.StringNullableFilter<"Booking"> | string | null
+  txnDate?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  refundAmt?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFilter<"Booking"> | boolean
   paymentUrl?: Prisma.StringNullableFilter<"Booking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
@@ -423,14 +367,8 @@ export type BookingOrderByWithAggregationInput = {
   amount?: Prisma.SortOrder
   resultStatus?: Prisma.SortOrder
   txnId?: Prisma.SortOrderInput | Prisma.SortOrder
-  bankTxnId?: Prisma.SortOrderInput | Prisma.SortOrder
-  txnAmount?: Prisma.SortOrderInput | Prisma.SortOrder
-  txnType?: Prisma.SortOrderInput | Prisma.SortOrder
-  gatewayName?: Prisma.SortOrderInput | Prisma.SortOrder
-  bankName?: Prisma.SortOrderInput | Prisma.SortOrder
-  paymentMode?: Prisma.SortOrderInput | Prisma.SortOrder
-  refundAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   txnDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  refundAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   refunded?: Prisma.SortOrder
   paymentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -455,14 +393,8 @@ export type BookingScalarWhereWithAggregatesInput = {
   amount?: Prisma.DecimalWithAggregatesFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusWithAggregatesFilter<"Booking"> | $Enums.TransactionStatus
   txnId?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  bankTxnId?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  txnAmount?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  txnType?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  gatewayName?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  bankName?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  paymentMode?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  refundAmt?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  txnDate?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
+  txnDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
+  refundAmt?: Prisma.DecimalNullableWithAggregatesFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolWithAggregatesFilter<"Booking"> | boolean
   paymentUrl?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Booking"> | Date | string
@@ -476,14 +408,8 @@ export type BookingCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -502,14 +428,8 @@ export type BookingUncheckedCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -523,14 +443,8 @@ export type BookingUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -549,14 +463,8 @@ export type BookingUncheckedUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -573,14 +481,8 @@ export type BookingCreateManyInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -594,14 +496,8 @@ export type BookingUpdateManyMutationInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -618,14 +514,8 @@ export type BookingUncheckedUpdateManyInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -653,14 +543,8 @@ export type BookingCountOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   resultStatus?: Prisma.SortOrder
   txnId?: Prisma.SortOrder
-  bankTxnId?: Prisma.SortOrder
-  txnAmount?: Prisma.SortOrder
-  txnType?: Prisma.SortOrder
-  gatewayName?: Prisma.SortOrder
-  bankName?: Prisma.SortOrder
-  paymentMode?: Prisma.SortOrder
-  refundAmt?: Prisma.SortOrder
   txnDate?: Prisma.SortOrder
+  refundAmt?: Prisma.SortOrder
   refunded?: Prisma.SortOrder
   paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -671,6 +555,7 @@ export type BookingAvgOrderByAggregateInput = {
   bookingno?: Prisma.SortOrder
   adults?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  refundAmt?: Prisma.SortOrder
 }
 
 export type BookingMaxOrderByAggregateInput = {
@@ -683,14 +568,8 @@ export type BookingMaxOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   resultStatus?: Prisma.SortOrder
   txnId?: Prisma.SortOrder
-  bankTxnId?: Prisma.SortOrder
-  txnAmount?: Prisma.SortOrder
-  txnType?: Prisma.SortOrder
-  gatewayName?: Prisma.SortOrder
-  bankName?: Prisma.SortOrder
-  paymentMode?: Prisma.SortOrder
-  refundAmt?: Prisma.SortOrder
   txnDate?: Prisma.SortOrder
+  refundAmt?: Prisma.SortOrder
   refunded?: Prisma.SortOrder
   paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -707,14 +586,8 @@ export type BookingMinOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   resultStatus?: Prisma.SortOrder
   txnId?: Prisma.SortOrder
-  bankTxnId?: Prisma.SortOrder
-  txnAmount?: Prisma.SortOrder
-  txnType?: Prisma.SortOrder
-  gatewayName?: Prisma.SortOrder
-  bankName?: Prisma.SortOrder
-  paymentMode?: Prisma.SortOrder
-  refundAmt?: Prisma.SortOrder
   txnDate?: Prisma.SortOrder
+  refundAmt?: Prisma.SortOrder
   refunded?: Prisma.SortOrder
   paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -725,6 +598,7 @@ export type BookingSumOrderByAggregateInput = {
   bookingno?: Prisma.SortOrder
   adults?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  refundAmt?: Prisma.SortOrder
 }
 
 export type BookingListRelationFilter = {
@@ -759,6 +633,18 @@ export type EnumTransactionStatusFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type BookingCreateNestedManyWithoutTripInput = {
@@ -852,14 +738,8 @@ export type BookingCreateWithoutTripInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -876,14 +756,8 @@ export type BookingUncheckedCreateWithoutTripInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -929,14 +803,8 @@ export type BookingScalarWhereInput = {
   amount?: Prisma.DecimalFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFilter<"Booking"> | $Enums.TransactionStatus
   txnId?: Prisma.StringNullableFilter<"Booking"> | string | null
-  bankTxnId?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnAmount?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnType?: Prisma.StringNullableFilter<"Booking"> | string | null
-  gatewayName?: Prisma.StringNullableFilter<"Booking"> | string | null
-  bankName?: Prisma.StringNullableFilter<"Booking"> | string | null
-  paymentMode?: Prisma.StringNullableFilter<"Booking"> | string | null
-  refundAmt?: Prisma.StringNullableFilter<"Booking"> | string | null
-  txnDate?: Prisma.StringNullableFilter<"Booking"> | string | null
+  txnDate?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  refundAmt?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFilter<"Booking"> | boolean
   paymentUrl?: Prisma.StringNullableFilter<"Booking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
@@ -950,14 +818,8 @@ export type BookingCreateWithoutUserInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -974,14 +836,8 @@ export type BookingUncheckedCreateWithoutUserInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -1023,14 +879,8 @@ export type BookingCreateManyTripInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -1044,14 +894,8 @@ export type BookingUpdateWithoutTripInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1068,14 +912,8 @@ export type BookingUncheckedUpdateWithoutTripInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1091,14 +929,8 @@ export type BookingUncheckedUpdateManyWithoutTripInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1114,14 +946,8 @@ export type BookingCreateManyUserInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: $Enums.TransactionStatus
   txnId?: string | null
-  bankTxnId?: string | null
-  txnAmount?: string | null
-  txnType?: string | null
-  gatewayName?: string | null
-  bankName?: string | null
-  paymentMode?: string | null
-  refundAmt?: string | null
-  txnDate?: string | null
+  txnDate?: Date | string | null
+  refundAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: boolean
   paymentUrl?: string | null
   createdAt?: Date | string
@@ -1135,14 +961,8 @@ export type BookingUpdateWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1159,14 +979,8 @@ export type BookingUncheckedUpdateWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1182,14 +996,8 @@ export type BookingUncheckedUpdateManyWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   resultStatus?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   txnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTxnId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnAmount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  gatewayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  txnDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1208,14 +1016,8 @@ export type BookingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   amount?: boolean
   resultStatus?: boolean
   txnId?: boolean
-  bankTxnId?: boolean
-  txnAmount?: boolean
-  txnType?: boolean
-  gatewayName?: boolean
-  bankName?: boolean
-  paymentMode?: boolean
-  refundAmt?: boolean
   txnDate?: boolean
+  refundAmt?: boolean
   refunded?: boolean
   paymentUrl?: boolean
   createdAt?: boolean
@@ -1236,21 +1038,15 @@ export type BookingSelectScalar = {
   amount?: boolean
   resultStatus?: boolean
   txnId?: boolean
-  bankTxnId?: boolean
-  txnAmount?: boolean
-  txnType?: boolean
-  gatewayName?: boolean
-  bankName?: boolean
-  paymentMode?: boolean
-  refundAmt?: boolean
   txnDate?: boolean
+  refundAmt?: boolean
   refunded?: boolean
   paymentUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"bookingno" | "id" | "userid" | "tripid" | "roomtype" | "adults" | "amount" | "resultStatus" | "txnId" | "bankTxnId" | "txnAmount" | "txnType" | "gatewayName" | "bankName" | "paymentMode" | "refundAmt" | "txnDate" | "refunded" | "paymentUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["booking"]>
+export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"bookingno" | "id" | "userid" | "tripid" | "roomtype" | "adults" | "amount" | "resultStatus" | "txnId" | "txnDate" | "refundAmt" | "refunded" | "paymentUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["booking"]>
 export type BookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   trip?: boolean | Prisma.TripDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1272,14 +1068,8 @@ export type $BookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     amount: runtime.Decimal
     resultStatus: $Enums.TransactionStatus
     txnId: string | null
-    bankTxnId: string | null
-    txnAmount: string | null
-    txnType: string | null
-    gatewayName: string | null
-    bankName: string | null
-    paymentMode: string | null
-    refundAmt: string | null
-    txnDate: string | null
+    txnDate: Date | null
+    refundAmt: runtime.Decimal | null
     refunded: boolean
     paymentUrl: string | null
     createdAt: Date
@@ -1664,14 +1454,8 @@ export interface BookingFieldRefs {
   readonly amount: Prisma.FieldRef<"Booking", 'Decimal'>
   readonly resultStatus: Prisma.FieldRef<"Booking", 'TransactionStatus'>
   readonly txnId: Prisma.FieldRef<"Booking", 'String'>
-  readonly bankTxnId: Prisma.FieldRef<"Booking", 'String'>
-  readonly txnAmount: Prisma.FieldRef<"Booking", 'String'>
-  readonly txnType: Prisma.FieldRef<"Booking", 'String'>
-  readonly gatewayName: Prisma.FieldRef<"Booking", 'String'>
-  readonly bankName: Prisma.FieldRef<"Booking", 'String'>
-  readonly paymentMode: Prisma.FieldRef<"Booking", 'String'>
-  readonly refundAmt: Prisma.FieldRef<"Booking", 'String'>
-  readonly txnDate: Prisma.FieldRef<"Booking", 'String'>
+  readonly txnDate: Prisma.FieldRef<"Booking", 'DateTime'>
+  readonly refundAmt: Prisma.FieldRef<"Booking", 'Decimal'>
   readonly refunded: Prisma.FieldRef<"Booking", 'Boolean'>
   readonly paymentUrl: Prisma.FieldRef<"Booking", 'String'>
   readonly createdAt: Prisma.FieldRef<"Booking", 'DateTime'>

@@ -548,6 +548,29 @@ export const userRouter = router({
         });
       }
     }),
+  fetchBookings: protectedProcedure.query(async ({ ctx }) => {
+    const bookings = await prisma.booking.findMany({
+      where: { userid: ctx.user.id, resultStatus: { not: 'TXN_FAILURE' } },
+      include: {
+        trip: {
+          select: {
+            id: true,
+            tripName: true,
+            images: true,
+            startDateTime: true,
+            endDateTime: true,
+          },
+        },
+      },
+    });
+    return bookings.map(booking => ({
+      ...booking,
+      trip: {
+        ...booking.trip,
+        images: booking.trip.images as unknown as string[],
+      },
+    }));
+  }),
   sendVerificationEmail: protectedProcedure
     .input(z.object({ email: z.email() }))
     .mutation(async ({ input }) => {

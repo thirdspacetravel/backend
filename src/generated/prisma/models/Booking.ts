@@ -57,6 +57,7 @@ export type BookingMinAggregateOutputType = {
   refundAmt: string | null
   txnDate: string | null
   refunded: boolean | null
+  paymentUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -80,6 +81,7 @@ export type BookingMaxAggregateOutputType = {
   refundAmt: string | null
   txnDate: string | null
   refunded: boolean | null
+  paymentUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -103,6 +105,7 @@ export type BookingCountAggregateOutputType = {
   refundAmt: number
   txnDate: number
   refunded: number
+  paymentUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -140,6 +143,7 @@ export type BookingMinAggregateInputType = {
   refundAmt?: true
   txnDate?: true
   refunded?: true
+  paymentUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -163,6 +167,7 @@ export type BookingMaxAggregateInputType = {
   refundAmt?: true
   txnDate?: true
   refunded?: true
+  paymentUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -186,6 +191,7 @@ export type BookingCountAggregateInputType = {
   refundAmt?: true
   txnDate?: true
   refunded?: true
+  paymentUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -296,6 +302,7 @@ export type BookingGroupByOutputType = {
   refundAmt: string | null
   txnDate: string | null
   refunded: boolean
+  paymentUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: BookingCountAggregateOutputType | null
@@ -342,6 +349,7 @@ export type BookingWhereInput = {
   refundAmt?: Prisma.StringNullableFilter<"Booking"> | string | null
   txnDate?: Prisma.StringNullableFilter<"Booking"> | string | null
   refunded?: Prisma.BoolFilter<"Booking"> | boolean
+  paymentUrl?: Prisma.StringNullableFilter<"Booking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
   trip?: Prisma.XOR<Prisma.TripScalarRelationFilter, Prisma.TripWhereInput>
@@ -367,6 +375,7 @@ export type BookingOrderByWithRelationInput = {
   refundAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   txnDate?: Prisma.SortOrderInput | Prisma.SortOrder
   refunded?: Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   trip?: Prisma.TripOrderByWithRelationInput
@@ -378,6 +387,7 @@ export type BookingWhereUniqueInput = Prisma.AtLeast<{
   bookingno?: number
   id?: string
   txnId?: string
+  userid_tripid?: Prisma.BookingUseridTripidCompoundUniqueInput
   AND?: Prisma.BookingWhereInput | Prisma.BookingWhereInput[]
   OR?: Prisma.BookingWhereInput[]
   NOT?: Prisma.BookingWhereInput | Prisma.BookingWhereInput[]
@@ -396,11 +406,12 @@ export type BookingWhereUniqueInput = Prisma.AtLeast<{
   refundAmt?: Prisma.StringNullableFilter<"Booking"> | string | null
   txnDate?: Prisma.StringNullableFilter<"Booking"> | string | null
   refunded?: Prisma.BoolFilter<"Booking"> | boolean
+  paymentUrl?: Prisma.StringNullableFilter<"Booking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
   trip?: Prisma.XOR<Prisma.TripScalarRelationFilter, Prisma.TripWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "bookingno" | "id" | "txnId">
+}, "bookingno" | "id" | "txnId" | "userid_tripid">
 
 export type BookingOrderByWithAggregationInput = {
   bookingno?: Prisma.SortOrder
@@ -421,6 +432,7 @@ export type BookingOrderByWithAggregationInput = {
   refundAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   txnDate?: Prisma.SortOrderInput | Prisma.SortOrder
   refunded?: Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.BookingCountOrderByAggregateInput
@@ -452,6 +464,7 @@ export type BookingScalarWhereWithAggregatesInput = {
   refundAmt?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   txnDate?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   refunded?: Prisma.BoolWithAggregatesFilter<"Booking"> | boolean
+  paymentUrl?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Booking"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Booking"> | Date | string
 }
@@ -472,6 +485,7 @@ export type BookingCreateInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   trip: Prisma.TripCreateNestedOneWithoutBookingsInput
@@ -497,6 +511,7 @@ export type BookingUncheckedCreateInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -517,6 +532,7 @@ export type BookingUpdateInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   trip?: Prisma.TripUpdateOneRequiredWithoutBookingsNestedInput
@@ -542,6 +558,7 @@ export type BookingUncheckedUpdateInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -565,6 +582,7 @@ export type BookingCreateManyInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -585,6 +603,7 @@ export type BookingUpdateManyMutationInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -608,6 +627,7 @@ export type BookingUncheckedUpdateManyInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -616,6 +636,11 @@ export type BookingOrderByRelevanceInput = {
   fields: Prisma.BookingOrderByRelevanceFieldEnum | Prisma.BookingOrderByRelevanceFieldEnum[]
   sort: Prisma.SortOrder
   search: string
+}
+
+export type BookingUseridTripidCompoundUniqueInput = {
+  userid: string
+  tripid: string
 }
 
 export type BookingCountOrderByAggregateInput = {
@@ -637,6 +662,7 @@ export type BookingCountOrderByAggregateInput = {
   refundAmt?: Prisma.SortOrder
   txnDate?: Prisma.SortOrder
   refunded?: Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -666,6 +692,7 @@ export type BookingMaxOrderByAggregateInput = {
   refundAmt?: Prisma.SortOrder
   txnDate?: Prisma.SortOrder
   refunded?: Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -689,6 +716,7 @@ export type BookingMinOrderByAggregateInput = {
   refundAmt?: Prisma.SortOrder
   txnDate?: Prisma.SortOrder
   refunded?: Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -833,6 +861,7 @@ export type BookingCreateWithoutTripInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutBookingsInput
@@ -856,6 +885,7 @@ export type BookingUncheckedCreateWithoutTripInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -908,6 +938,7 @@ export type BookingScalarWhereInput = {
   refundAmt?: Prisma.StringNullableFilter<"Booking"> | string | null
   txnDate?: Prisma.StringNullableFilter<"Booking"> | string | null
   refunded?: Prisma.BoolFilter<"Booking"> | boolean
+  paymentUrl?: Prisma.StringNullableFilter<"Booking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
 }
@@ -928,6 +959,7 @@ export type BookingCreateWithoutUserInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   trip: Prisma.TripCreateNestedOneWithoutBookingsInput
@@ -951,6 +983,7 @@ export type BookingUncheckedCreateWithoutUserInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -999,6 +1032,7 @@ export type BookingCreateManyTripInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1019,6 +1053,7 @@ export type BookingUpdateWithoutTripInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
@@ -1042,6 +1077,7 @@ export type BookingUncheckedUpdateWithoutTripInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1064,6 +1100,7 @@ export type BookingUncheckedUpdateManyWithoutTripInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1086,6 +1123,7 @@ export type BookingCreateManyUserInput = {
   refundAmt?: string | null
   txnDate?: string | null
   refunded?: boolean
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1106,6 +1144,7 @@ export type BookingUpdateWithoutUserInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   trip?: Prisma.TripUpdateOneRequiredWithoutBookingsNestedInput
@@ -1129,6 +1168,7 @@ export type BookingUncheckedUpdateWithoutUserInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1151,6 +1191,7 @@ export type BookingUncheckedUpdateManyWithoutUserInput = {
   refundAmt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   txnDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refunded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1176,6 +1217,7 @@ export type BookingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   refundAmt?: boolean
   txnDate?: boolean
   refunded?: boolean
+  paymentUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   trip?: boolean | Prisma.TripDefaultArgs<ExtArgs>
@@ -1203,11 +1245,12 @@ export type BookingSelectScalar = {
   refundAmt?: boolean
   txnDate?: boolean
   refunded?: boolean
+  paymentUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"bookingno" | "id" | "userid" | "tripid" | "roomtype" | "adults" | "amount" | "resultStatus" | "txnId" | "bankTxnId" | "txnAmount" | "txnType" | "gatewayName" | "bankName" | "paymentMode" | "refundAmt" | "txnDate" | "refunded" | "createdAt" | "updatedAt", ExtArgs["result"]["booking"]>
+export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"bookingno" | "id" | "userid" | "tripid" | "roomtype" | "adults" | "amount" | "resultStatus" | "txnId" | "bankTxnId" | "txnAmount" | "txnType" | "gatewayName" | "bankName" | "paymentMode" | "refundAmt" | "txnDate" | "refunded" | "paymentUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["booking"]>
 export type BookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   trip?: boolean | Prisma.TripDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1238,6 +1281,7 @@ export type $BookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     refundAmt: string | null
     txnDate: string | null
     refunded: boolean
+    paymentUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["booking"]>
@@ -1629,6 +1673,7 @@ export interface BookingFieldRefs {
   readonly refundAmt: Prisma.FieldRef<"Booking", 'String'>
   readonly txnDate: Prisma.FieldRef<"Booking", 'String'>
   readonly refunded: Prisma.FieldRef<"Booking", 'Boolean'>
+  readonly paymentUrl: Prisma.FieldRef<"Booking", 'String'>
   readonly createdAt: Prisma.FieldRef<"Booking", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Booking", 'DateTime'>
 }

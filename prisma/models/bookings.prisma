@@ -20,10 +20,12 @@ model Booking {
     refundAmt    String?
     txnDate      String?
     refunded     Boolean           @default(false)
+    paymentUrl   String?           @db.Text
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    @@unique([userid, tripid])
     @@map("bookings")
 }
 

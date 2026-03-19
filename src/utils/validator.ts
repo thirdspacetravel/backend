@@ -49,7 +49,12 @@ export function validateUserProfile(data: Partial<UserProfileInput>): {
   if (isMissing(data.gender)) errors.push('Gender is required.');
   if (isInvalidString(data.nationality)) errors.push('Nationality is required.');
   if (isMissing(data.maritalStatus)) errors.push('Marital status is required.');
-  if (isMissing(data.anniversaryDate)) errors.push('Anniversary date is required.');
+  if (
+    !isMissing(data.maritalStatus) &&
+    data.maritalStatus === 'MARRIED' &&
+    isMissing(data.anniversaryDate)
+  )
+    errors.push('Anniversary date is required.');
   if (isInvalidString(data.phoneNumber)) errors.push('Phone number is required.');
   if (isInvalidString(data.upiId)) errors.push('UPI ID is required.');
   if (isInvalidString(data.streetAddress)) errors.push('Street address is required.');

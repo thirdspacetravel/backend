@@ -178,21 +178,39 @@ export const publicRouter = router({
         };
       });
     }),
-  fetchTripById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
-    const trip = await prisma.trip.findUnique({
-      where: { id: input.id },
-    });
-    if (!trip) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'Trip not found' });
-    }
-    const { createdAt, updatedAt, ...tripWithoutSensitiveData } = trip;
-    return {
-      ...tripWithoutSensitiveData,
-      itinerary: trip.itinerary as unknown as DayData[],
-      categories: trip.categories as unknown as string[],
-      images: trip.images as unknown as string[],
-    };
-  }),
+  fetchTripById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const userId = ctx.user?.id;
+
+      const trip = await prisma.trip.findUnique({
+        where: { id: input.id },
+        include: {
+          ...(userId && {
+            bookings: {
+              where: {
+                userid: userId,
+                resultStatus: {
+                  not: 'TXN_FAILURE',
+                },
+              },
+            },
+          }),
+        },
+      });
+      if (!trip) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Trip not found' });
+      }
+      const userBooking = trip.bookings?.[0] || null;
+      const { createdAt, updatedAt, ...tripWithoutSensitiveData } = trip;
+      return {
+        ...tripWithoutSensitiveData,
+        itinerary: trip.itinerary as unknown as DayData[],
+        categories: trip.categories as unknown as string[],
+        images: trip.images as unknown as string[],
+        userBooking,
+      };
+    }),
   createEnquiry: publicProcedure
     .input(
       z.object({

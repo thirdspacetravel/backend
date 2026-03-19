@@ -20,8 +20,12 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   FRONTEND_URL: z.string().default('http://localhost:3000'),
-  PHONEPE_CID: z.string(),
-  PHONEPE_CLIENT_KEY: z.string(),
+  PHONEPE_CLIENT_ID: z.string(),
+  PHONEPE_CLIENT_SECRET: z.string(),
+  PHONEPE_CLIENT_VERSION: z.coerce.number().default(1),
+  PHONEPE_ENV: z.enum(['sandbox', 'production']).default('sandbox'),
+  WEBHOOK_USERNAME: z.string(),
+  WEBHOOK_PASSWORD: z.string(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -44,8 +48,12 @@ const env = parsed.success
       GOOGLE_CLIENT_ID: '',
       GOOGLE_CLIENT_SECRET: '',
       FRONTEND_URL: '',
-      PHONEPE_CID: '',
-      PHONEPE_CLIENT_KEY: '',
+      PHONEPE_CLIENT_ID: '',
+      PHONEPE_CLIENT_SECRET: '',
+      PHONEPE_CLIENT_VERSION: 1,
+      PHONEPE_ENV: 'SANDBOX',
+      WEBHOOK_USERNAME: '',
+      WEBHOOK_PASSWORD: '',
     };
 
 export const config = {
@@ -64,6 +72,10 @@ export const config = {
   googleClientId: env.GOOGLE_CLIENT_ID,
   googleClientSecret: env.GOOGLE_CLIENT_SECRET,
   frontendUrl: env.FRONTEND_URL,
-  phonepeCid: env.PHONEPE_CID,
-  phonepeClientKey: env.PHONEPE_CLIENT_KEY,
+  phonepeCid: env.PHONEPE_CLIENT_ID,
+  phonepeClientKey: env.PHONEPE_CLIENT_SECRET,
+  phonepeClientVersion: env.PHONEPE_CLIENT_VERSION,
+  phonepeEnv: env.PHONEPE_ENV,
+  webhookUsername: env.WEBHOOK_USERNAME,
+  webhookPassword: env.WEBHOOK_PASSWORD,
 } as const;

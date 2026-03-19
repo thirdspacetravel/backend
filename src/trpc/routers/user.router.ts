@@ -14,12 +14,12 @@ import {
 } from '../../generated/prisma/browser.js';
 import { sendEmail } from '../../utils/mailer.js';
 import { validateUserProfile } from '../../utils/validator.js';
-import axios from 'axios';
 import { StorageManager } from '../../utils/StorageManager.js';
+import { phonePeProvider } from '../../utils/phonepe.service.js';
+import { Prisma } from '../../generated/prisma/client.js';
+import { v4 as uuid } from 'uuid';
 
 type UserDataType = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'passwordHash'>;
-
-const packageOptions = ['Quad Sharing', 'Triple Sharing', 'Double Sharing'];
 
 export const verificationEmailHtml = (url: string) => `
     <div
@@ -101,7 +101,7 @@ export const userRouter = router({
   login: publicProcedure
     .input(
       z.object({
-        email: z.email(),
+        email: z.email('Invalid email address'),
         password: z.string(),
       }),
     )
@@ -166,9 +166,9 @@ export const userRouter = router({
   signup: publicProcedure
     .input(
       z.object({
-        fullName: z.string(),
-        email: z.email(),
-        password: z.string(),
+        fullName: z.string().min(1, 'Full name is required'),
+        email: z.email('Invalid email address'),
+        password: z.string().min(6, 'Password must be at least 6 characters long'),
       }),
     )
     .mutation(async ({ input }) => {
@@ -183,7 +183,7 @@ export const userRouter = router({
             code: 'FORBIDDEN',
           });
         } else {
-          throw new TRPCError({ message: 'Email already in use', code: 'CONFLICT' });
+          throw new TRPCError({ message: 'Email already exists.', code: 'CONFLICT' });
         }
       }
       const passwordHash = await hashPassword(input.password);
@@ -345,109 +345,206 @@ export const userRouter = router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const trip = await prisma.trip.findUnique({
-        where: {
-          id: input.tripId,
-        },
-      });
-      if (!trip) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Invalid trip ID provided.',
-        });
-      }
-      if (trip.status !== 'PUBLISHED') {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Cannot book a cancelled/completed trip.',
-        });
-      }
-      if (!trip.isAcceptingBookings) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'This trip is not accepting bookings at the moment.',
-        });
-      }
-      if (trip.priceQuad === null && trip.priceTriple === null && trip.priceDouble === null) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Trip pricing information is incomplete.',
-        });
-      }
-      const user = await prisma.user.findUnique({
-        where: { id: ctx.user.id },
-      });
-      if (!user) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not found.',
-        });
-      }
-      const userdatavalid = validateUserProfile(user);
-      if (userdatavalid.isValid === false) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message:
-            'Please complete your profile information before booking a trip.' +
-            JSON.stringify(userdatavalid.errors),
-        });
-      }
-      const prices = [trip.priceQuad, trip.priceTriple, trip.priceDouble];
-      const price = prices[input.roomType - 1];
-      if (!price) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Invalid room type selected.',
-        });
-      }
-      const adults = input.adults;
-      const totalAmount = Number(price) * Number(adults);
+      // We wrap everything in a transaction to ensure atomicity
+      return await prisma.$transaction(
+        async tx => {
+          // 1. Fetch Trip with a Row-Level Lock
+          // This prevents other concurrent transactions from modifying this trip until we are done.
+          const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 
-      if (isNaN(totalAmount) || totalAmount <= 0) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Invalid calculation of total amount.',
-        });
-      }
-      const booking = await prisma.booking.create({
-        data: {
-          tripid: input.tripId,
-          userid: ctx.user.id,
-          roomtype: packageOptions[input.roomType - 1] || 'Quad Sharing',
-          adults: input.adults,
-          amount: totalAmount,
-        },
-      });
-      if (!booking) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to create booking record.',
-        });
-      }
+          const trip = await tx.trip.findUnique({
+            where: { id: input.tripId },
+            include: {
+              bookings: {
+                where: {
+                  OR: [
+                    { resultStatus: 'TXN_SUCCESS' },
+                    {
+                      resultStatus: 'TXN_PENDING',
+                      createdAt: { gte: fifteenMinutesAgo },
+                    },
+                  ],
+                },
+                select: { adults: true, resultStatus: true },
+              },
+            },
+          });
 
+          if (!trip || trip.status !== 'PUBLISHED' || !trip.isAcceptingBookings) {
+            throw new TRPCError({ code: 'BAD_REQUEST', message: 'Trip unavailable.' });
+          }
+
+          // 2. Calculate Occupancy
+          const confirmedAdults = trip.bookings
+            .filter(b => b.resultStatus === 'TXN_SUCCESS')
+            .reduce((sum, b) => sum + b.adults, 0);
+
+          const pendingAdults = trip.bookings
+            .filter(b => b.resultStatus === 'TXN_PENDING')
+            .reduce((sum, b) => sum + b.adults, 0);
+
+          const totalOccupied = confirmedAdults + pendingAdults;
+          if (!trip || trip.status !== 'PUBLISHED' || !trip.isAcceptingBookings) {
+            throw new TRPCError({ code: 'BAD_REQUEST', message: 'Trip unavailable.' });
+          }
+
+          if (!trip.totalSeats) {
+            throw new TRPCError({ code: 'BAD_REQUEST', message: 'Trip capacity not defined.' });
+          }
+
+          // 3. Scenario-based Error Messages
+          if (confirmedAdults + input.adults > trip.totalSeats) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Sorry, this trip is now fully booked.',
+            });
+          }
+
+          if (totalOccupied + input.adults > trip.totalSeats) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: `Some spots are currently held by other users in checkout. Please try again in 15 minutes.`,
+            });
+          }
+          // 3. Pricing Logic
+          const priceMap = { 1: trip.priceQuad, 2: trip.priceTriple, 3: trip.priceDouble };
+          const price = priceMap[input.roomType as keyof typeof priceMap];
+          if (!price) {
+            throw new TRPCError({ code: 'BAD_REQUEST', message: 'Pricing tier unavailable.' });
+          }
+          const totalAmount = Number(price) * input.adults;
+
+          // 4. Profile Validation
+          const user = await tx.user.findUnique({ where: { id: ctx.user.id } });
+          if (!user) {
+            throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+          }
+          const userdatavalid = validateUserProfile(user);
+          if (!userdatavalid.isValid) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: `Profile incomplete: ${userdatavalid.errors.join(', ')}`,
+            });
+          }
+          const existingBooking = await tx.booking.findUnique({
+            where: {
+              userid_tripid: {
+                userid: ctx.user.id,
+                tripid: input.tripId,
+              },
+            },
+          });
+
+          if (existingBooking?.resultStatus === 'TXN_SUCCESS') {
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message: 'You have already successfully booked this trip.',
+            });
+          }
+          // 2. Logic for reusing PENDING payment links
+          if (existingBooking?.resultStatus === 'TXN_PENDING' && existingBooking.paymentUrl) {
+            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000); // 10-minute safety buffer
+
+            // If the booking was created within the last 10 minutes, reuse the URL
+            if (existingBooking.createdAt > tenMinutesAgo) {
+              return existingBooking.paymentUrl;
+            }
+          }
+          const newId = uuid();
+          // 6. External Gateway Call
+          try {
+            const response = await phonePeProvider.initiatePayment({
+              amount: totalAmount * 100,
+              merchantOrderId: newId,
+              redirectUrl: `${config.frontendUrl}/trip/${trip.id}`,
+              paymentModes: [{ type: 'UPI_INTENT' }, { type: 'UPI_QR' }, { type: 'UPI_COLLECT' }],
+            });
+
+            // 4. Update the existing record or create a new one
+            await tx.booking.upsert({
+              where: {
+                userid_tripid: {
+                  userid: ctx.user.id,
+                  tripid: input.tripId,
+                },
+              },
+              update: {
+                id: newId,
+                createdAt: new Date(), // Reset timestamp for the new link
+                paymentUrl: response.redirectUrl,
+                resultStatus: 'TXN_PENDING', // Ensure status is pending
+                amount: totalAmount, // Update amount in case price changed
+              },
+              create: {
+                id: newId,
+                tripid: input.tripId,
+                userid: ctx.user.id,
+                resultStatus: 'TXN_PENDING',
+                roomtype:
+                  input.roomType === 1 ? 'Quad' : input.roomType === 2 ? 'Triple' : 'Double',
+                adults: input.adults,
+                amount: totalAmount,
+                paymentUrl: response.redirectUrl,
+              },
+            });
+
+            return response.redirectUrl;
+          } catch (error) {
+            throw new TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message: 'Payment gateway initialization failed.',
+            });
+          }
+        },
+        {
+          timeout: 10000,
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        },
+      );
+    }),
+  pendingPayment: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
       try {
-        return {
-          txnToken: 'dfg' as string,
-          orderId: booking.id,
-          mid: config.phonepeCid,
-          amount: totalAmount.toFixed(2),
-        };
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error('Axios Error Data:', error.response?.data);
-          console.error('Axios Error Status:', error.response?.status);
-        } else {
-          console.error('Generic Error:', error);
+        const repsonse = await phonePeProvider.checkOrderStatus(input.id);
+        if (!repsonse.state) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message:
+              'Invalid Booking ID or unable to fetch payment status. Please try again later.',
+          });
         }
-        await prisma.booking.update({
-          where: { id: booking.id },
-          data: {
-            resultStatus: 'TXN_FAILURE',
+        if (repsonse.state === 'COMPLETED') {
+          await prisma.booking.update({
+            where: { id: input.id },
+            data: { resultStatus: 'TXN_SUCCESS' },
+          });
+          return { hasPendingPayment: false, hasPaymentFailed: false };
+        }
+        if (repsonse.state === 'FAILED') {
+          await prisma.booking.update({
+            where: { id: input.id },
+            data: { resultStatus: 'TXN_FAILURE' },
+          });
+          return { hasPendingPayment: false, hasPaymentFailed: true };
+        }
+        const booking = await prisma.booking.findUnique({
+          where: {
+            id: input.id,
+            resultStatus: 'TXN_PENDING',
           },
         });
+        if (!booking) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'No pending payment found for this booking ID.',
+          });
+        }
+        return { hasPendingPayment: !!booking, paymentUrl: booking.paymentUrl };
+      } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to communicate with payment gateway.',
+          message: 'Failed to check payment status. Please try again later.',
         });
       }
     }),

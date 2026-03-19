@@ -1,7 +1,19 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context.js';
 import { prisma } from '../config/database.config.js';
-const t = initTRPC.context<Context>().create();
+import z, { ZodError } from 'zod';
+const t = initTRPC.context<Context>().create({
+  errorFormatter({ shape, error }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        // Using a type guard and explicit casting to avoid the deprecation
+        zodError: error.cause instanceof ZodError ? z.treeifyError(error.cause) : null,
+      },
+    };
+  },
+});
 
 export const router = t.router;
 export const publicProcedure = t.procedure;

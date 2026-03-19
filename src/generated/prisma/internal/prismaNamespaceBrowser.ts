@@ -113,6 +113,7 @@ export const BookingScalarFieldEnum = {
   refundAmt: 'refundAmt',
   txnDate: 'txnDate',
   refunded: 'refunded',
+  paymentUrl: 'paymentUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -266,7 +267,8 @@ export const BookingOrderByRelevanceFieldEnum = {
   bankName: 'bankName',
   paymentMode: 'paymentMode',
   refundAmt: 'refundAmt',
-  txnDate: 'txnDate'
+  txnDate: 'txnDate',
+  paymentUrl: 'paymentUrl'
 } as const
 
 export type BookingOrderByRelevanceFieldEnum = (typeof BookingOrderByRelevanceFieldEnum)[keyof typeof BookingOrderByRelevanceFieldEnum]

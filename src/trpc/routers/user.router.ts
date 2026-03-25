@@ -359,6 +359,7 @@ export const userRouter = router({
                 where: {
                   OR: [
                     { resultStatus: 'TXN_SUCCESS' },
+                    { resultStatus: 'TXN_CANCELLED' },
                     {
                       resultStatus: 'TXN_PENDING',
                       createdAt: { gte: fifteenMinutesAgo },
@@ -434,24 +435,28 @@ export const userRouter = router({
               },
             },
           });
-
-          if (existingBooking?.resultStatus === 'TXN_SUCCESS') {
-            throw new TRPCError({
-              code: 'CONFLICT',
-              message: 'You have already successfully booked this trip.',
-            });
-          }
-          // 2. Logic for reusing PENDING payment links
-          if (existingBooking?.resultStatus === 'TXN_PENDING' && existingBooking.paymentUrl) {
-            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000); // 10-minute safety buffer
-
-            // If the booking was created within the last 10 minutes, reuse the URL
-            if (existingBooking.createdAt > tenMinutesAgo) {
-              return existingBooking.paymentUrl;
+          if (existingBooking) {
+            if (existingBooking.resultStatus === 'TXN_SUCCESS') {
+              throw new TRPCError({
+                code: 'CONFLICT',
+                message: 'You have already successfully booked this trip.',
+              });
+            }
+            if (existingBooking.resultStatus === 'TXN_PENDING' && existingBooking.paymentUrl) {
+              const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+              if (existingBooking.createdAt > tenMinutesAgo) {
+                return existingBooking.paymentUrl;
+              }
+            }
+            if (existingBooking.resultStatus === 'TXN_CANCELLED' && !existingBooking.refunded) {
+              throw new TRPCError({
+                code: 'CONFLICT',
+                message:
+                  'Your Refund is being processed. Rebooking will be available once the refund is complete.',
+              });
             }
           }
           const newId = uuid();
-          // 6. External Gateway Call
           try {
             const response = await phonePeProvider.initiatePayment({
               amount: totalAmount * 100,
@@ -596,6 +601,33 @@ export const userRouter = router({
       },
     }));
   }),
+  cancelBooking: protectedProcedure
+    .input(
+      z.object({
+        bookingId: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { bookingId } = input;
+      try {
+        const updatedBooking = await prisma.booking.update({
+          where: { id: bookingId, userid: ctx.user.id },
+          data: { resultStatus: 'TXN_CANCELLED' },
+        });
+        if (!updatedBooking) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: `Booking with ID ${bookingId} not found`,
+          });
+        }
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to cancel booking. Please try again later.',
+        });
+      }
+      return { success: true };
+    }),
   sendVerificationEmail: protectedProcedure
     .input(z.object({ email: z.email() }))
     .mutation(async ({ input }) => {

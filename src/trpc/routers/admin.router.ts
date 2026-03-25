@@ -246,9 +246,9 @@ export const adminRouter = router({
     )
     .query(async ({ input }) => {
       const skip = (input.page - 1) * LIMIT;
-
       const where = getTripSearchWhere(input.keyword);
 
+      // 1. Fetch the trips
       const trips = await prisma.trip.findMany({
         where,
         take: LIMIT,
@@ -256,31 +256,40 @@ export const adminRouter = router({
         orderBy: {
           tripNo: 'desc',
         },
-        include: {
-          _count: {
-            select: {
-              bookings: {
-                where: {
-                  resultStatus: 'TXN_SUCCESS',
-                },
-              },
-            },
-          },
+        // Note: We removed _count from include because bookedSeats now comes from the sum
+      });
+
+      // 2. Extract IDs to calculate the sum of adults for these specific trips
+      const tripIds = trips.map(t => t.id);
+
+      const adultSums = await prisma.booking.groupBy({
+        by: ['tripid'],
+        where: {
+          tripid: { in: tripIds },
+          resultStatus: 'TXN_SUCCESS',
+        },
+        _sum: {
+          adults: true,
         },
       });
 
+      // 3. Map and Return
       return trips.map(trip => {
-        const { createdAt, updatedAt, _count, ...tripWithoutSensitiveData } = trip;
+        // Find the specific sum for this trip
+        const sumEntry = adultSums.find(s => s.tripid === trip.id);
+
+        // Destructure to remove sensitive/unused data
+        const { createdAt, updatedAt, ...tripWithoutSensitiveData } = trip;
+
         return {
           ...tripWithoutSensitiveData,
           itinerary: trip.itinerary as unknown as DayData[],
           categories: trip.categories as unknown as string[],
           images: trip.images as unknown as string[],
-          bookedSeats: _count.bookings,
+          bookedSeats: sumEntry?._sum?.adults ?? 0,
         };
       });
     }),
-
   getTripsCount: adminProcedure
     .input(
       z.object({
@@ -615,6 +624,34 @@ export const adminRouter = router({
         total: count,
         totalPages: Math.ceil(count / LIMIT),
       };
+    }),
+  cancelBooking: adminProcedure
+    .input(
+      z.object({
+        bookingId: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { bookingId } = input;
+      try {
+        const updatedBooking = await prisma.booking.update({
+          where: { id: bookingId },
+          data: { resultStatus: 'TXN_CANCELLED' },
+        });
+        if (!updatedBooking) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: `Booking with ID ${bookingId} not found`,
+          });
+        }
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to cancel booking. Please try again later.',
+        });
+      }
+
+      return { success: true };
     }),
   markAsRefunded: adminProcedure
     .input(

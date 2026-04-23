@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { StorageManager } from './StorageManager.js';
-import { prisma } from '@/config/database.config.js';
-import { TransactionStatus } from '@/generated/prisma/browser.js';
+import { prisma } from '../config/database.config.js';
+import { TransactionStatus } from '../generated/prisma/browser.js';
 import { phonePeProvider } from './phonepe.service.js';
 
 export const initCronJobs = () => {

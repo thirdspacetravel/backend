@@ -328,4 +328,72 @@ export const publicRouter = router({
         });
       }
     }),
+  fetchBlogs: publicProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+        keyword: z.string().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const LIMIT = 10;
+      const skip = (input.page - 1) * LIMIT;
+
+      let whereCondition: any = { status: 'PUBLISHED' };
+
+      if (input.keyword) {
+        whereCondition = {
+          status: 'PUBLISHED',
+          OR: [{ title: { contains: input.keyword } }, { author: { contains: input.keyword } }],
+        };
+      }
+
+      const blogs = await prisma.blog.findMany({
+        where: whereCondition,
+        take: LIMIT,
+        skip: skip,
+        orderBy: { blogNo: 'desc' },
+      });
+      return blogs.map(blog => ({
+        ...blog,
+        images: blog.images as unknown as string[],
+      }));
+    }),
+
+  fetchBlogCount: publicProcedure
+    .input(
+      z.object({
+        keyword: z.string().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      let whereCondition: any = { status: 'PUBLISHED' };
+
+      if (input.keyword) {
+        whereCondition = {
+          status: 'PUBLISHED',
+          OR: [{ title: { contains: input.keyword } }, { author: { contains: input.keyword } }],
+        };
+      }
+
+      const count = await prisma.blog.count({
+        where: whereCondition,
+      });
+      return count;
+    }),
+
+  fetchBlogBySlug: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ input }) => {
+      const blog = await prisma.blog.findUnique({
+        where: { slug: input.slug },
+      });
+      if (!blog || blog.status !== 'PUBLISHED') {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Blog not found' });
+      }
+      return {
+        ...blog,
+        images: blog.images as unknown as string[],
+      };
+    }),
 });

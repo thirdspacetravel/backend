@@ -849,4 +849,138 @@ export const adminRouter = router({
 
     return result;
   }),
+  createDraftBlog: adminProcedure.mutation(async ({ ctx }) => {
+    const blog = await prisma.blog.create({
+      data: {
+        images: [],
+      },
+    });
+    return { success: true, blogId: blog.id };
+  }),
+  fetchBlogs: adminProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+        keyword: z.string().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const LIMIT = 10;
+      const skip = (input.page - 1) * LIMIT;
+      const where = input.keyword ? { title: { contains: input.keyword } } : {};
+      const blogs = await prisma.blog.findMany({
+        where,
+        take: LIMIT,
+        skip: skip,
+        orderBy: { blogNo: 'desc' },
+      });
+      return blogs.map(blog => ({
+        ...blog,
+        images: blog.images as unknown as string[],
+      }));
+    }),
+  getBlogsCount: adminProcedure
+    .input(
+      z.object({
+        keyword: z.string().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const LIMIT = 10;
+      const where = input.keyword ? { title: { contains: input.keyword } } : {};
+      const count = await prisma.blog.count({ where });
+      return {
+        total: count,
+        totalPages: Math.ceil(count / LIMIT),
+      };
+    }),
+  deleteBlog: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
+    const blog = await prisma.blog.findUnique({ where: { id: input.id } });
+    if (!blog) throw new TRPCError({ code: 'NOT_FOUND', message: 'Blog not found' });
+
+    await prisma.blog.delete({ where: { id: input.id } });
+
+    const images = blog.images as unknown as string[];
+    if (images && images.length > 0) {
+      for (const img of images) {
+        try {
+          await StorageManager.deletePersistentFile(img);
+        } catch (err: unknown) {
+          if (err instanceof Error) console.error(`Failed to delete image ${img}:`, err.message);
+        }
+      }
+    }
+    return { success: true };
+  }),
+  fetchBlogById: adminProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const blog = await prisma.blog.findUnique({
+      where: { id: input.id },
+    });
+    if (!blog) throw new TRPCError({ code: 'NOT_FOUND', message: 'Blog not found' });
+    return {
+      ...blog,
+      images: blog.images as unknown as string[],
+    };
+  }),
+
+  updateBlog: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        slug: z.string(),
+        author: z.string(),
+        content: z.string(),
+        images: z.array(z.string()),
+        status: z.enum(['DRAFT', 'PUBLISHED']),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const oldblog = await prisma.blog.findUnique({ where: { id: input.id } });
+      if (!oldblog) throw new TRPCError({ code: 'NOT_FOUND', message: 'Blog not found' });
+
+      const blog = await prisma.blog.update({
+        where: { id: input.id },
+        data: {
+          title: input.title,
+          slug: input.slug,
+          author: input.author,
+          content: input.content,
+          images: input.images as Prisma.InputJsonValue,
+          status: input.status,
+        },
+      });
+
+      const oldimages = (oldblog.images as unknown as string[]) || [];
+      const newimages = (input.images as unknown as string[]) || [];
+      const removedImages = getDifference(oldimages, newimages);
+      const addedImages = getDifference(newimages, oldimages);
+
+      if (removedImages.length > 0) {
+        for (const img of removedImages) {
+          try {
+            await StorageManager.deletePersistentFile(img);
+          } catch (err: unknown) {
+            if (err instanceof Error) console.error(`Failed to delete image ${img}:`, err.message);
+          }
+        }
+      }
+      if (addedImages.length > 0) {
+        for (const img of addedImages) {
+          try {
+            await StorageManager.persistFile(img);
+          } catch (err: unknown) {
+            if (err instanceof Error) console.error(`Failed to move image ${img}:`, err.message);
+          }
+        }
+      }
+
+      return {
+        success: true,
+        blog: {
+          ...blog,
+          images: blog.images as unknown as string[],
+        },
+      };
+    }),
 });

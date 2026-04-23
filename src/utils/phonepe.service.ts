@@ -1,4 +1,4 @@
-import { config } from '@/config/env.config.js';
+import { config } from '../config/env.config.js';
 import PhonePeManager from './PhonePeManager.js';
 import dotenv from 'dotenv';
 

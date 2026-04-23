@@ -1,0 +1,17 @@
+model Blog {
+    id        String     @id @default(uuid())
+    blogNo    Int        @unique @default(autoincrement())
+    title     String     @default("Untitled Blog")
+    slug      String     @unique @default(uuid())
+    content   String     @default("") @db.LongText
+    images    Json       @default("[]")
+    author    String     @default("Admin")
+    status    BlogStatus @default(DRAFT)
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+enum BlogStatus {
+    DRAFT
+    PUBLISHED
+}

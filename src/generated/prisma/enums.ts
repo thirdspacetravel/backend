@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const BlogStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED'
+} as const
+
+export type BlogStatus = (typeof BlogStatus)[keyof typeof BlogStatus]
+
+
 export const TransactionStatus = {
   TXN_SUCCESS: 'TXN_SUCCESS',
   TXN_PENDING: 'TXN_PENDING',

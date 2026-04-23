@@ -45,6 +45,11 @@ export { Prisma }
  */
 export type AdminUser = Prisma.AdminUserModel
 /**
+ * Model Blog
+ * 
+ */
+export type Blog = Prisma.BlogModel
+/**
  * Model Booking
  * 
  */

@@ -16,7 +16,7 @@ const prismaClientFactory = () => {
     user: config.user,
     password: config.password,
     database: config.name,
-    connectionLimit: 5,
+    connectionLimit: 20,
   });
 
   return new PrismaClient({

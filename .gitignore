@@ -5,5 +5,3 @@ dist
 /prisma/migrations
 /uploads
 lock.txt
-.env.development
-.env.production

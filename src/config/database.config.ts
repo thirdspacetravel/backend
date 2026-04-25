@@ -28,7 +28,8 @@ const prismaClientFactory = () => {
 // 2. Use the singleton
 export const prisma = globalForPrisma.prisma ?? prismaClientFactory();
 
-if (config.env !== 'production') globalForPrisma.prisma = prisma;
+// Always cache to global object to prevent multiple instantiations
+globalForPrisma.prisma = prisma;
 
 // 3. Graceful Shutdown
 const handleShutdown = async (signal: string) => {
